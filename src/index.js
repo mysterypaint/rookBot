@@ -18,18 +18,23 @@ const ARK_GUILD_ID = process.env.ARK_GUILD_ID;
 const ARK_CHANNEL_ID_BOTS = process.env.ARK_CHANNEL_ID_BOTS;
 const ARK_CHANNEL_ID_DA_CHAT = process.env.ARK_CHANNEL_ID_DA_CHAT;
 const ARK_CHANNEL_ID_HOTCHIP = process.env.ARK_CHANNEL_ID_HOTCHIP;
+const ARK_WHITELISTED_CHANNEL_IDS = process.env.ARK_WHITELISTED_CHANNEL_IDS.split(", ");
 
 const PERSONAL_GUILD_ID = process.env.PERSONAL_GUILD_ID;
 const PERSONAL_CHANNEL_ID_GENERAL = process.env.PERSONAL_CHANNEL_ID_GENERAL;
 const PERSONAL_CHANNEL_ID_N = process.env.PERSONAL_CHANNEL_ID_N;
 
 const MASHIRO_PRAY_EMOTE_ID = process.env.MASHIRO_PRAY_EMOTE_ID;
+const MIFU_SHRIMP_EMOTE_ID = process.env.MIFU_SHRIMP_EMOTE_ID;
 
 const allowedArkChannels = [ ARK_CHANNEL_ID_BOTS, ARK_CHANNEL_ID_DA_CHAT, ARK_CHANNEL_ID_HOTCHIP];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 const GUILD_ID = PERSONAL_GUILD_ID;
+
+var mifuTimer = 200;
+const mifuTimerReset = 200;
 
 client.on('ready', () => console.log(`${client.user.tag} has logged in!`));
 
@@ -49,6 +54,11 @@ client.on('interactionCreate', (interaction) => {
 
 
 
+function sayMifuShrimp(channel) {
+    channel.send('<:mifushrimp:' + MIFU_SHRIMP_EMOTE_ID + '>');
+    mifuTimer = mifuTimerReset;
+}
+
 function sayCute(message) {
     const msgLower = message.content.toLowerCase();
     
@@ -63,17 +73,28 @@ client.on('messageCreate', (message) => {
     const msgLower = message.content.toLowerCase();
     const msgContent = message.content;
     
+    mifuTimer--;
+    if (mifuTimer <= 0) {
+        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
+        
+        //sayMifuShrimp(client.channels.fetch(parseInt(randomWhitelistedChannel)));
+        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
+        sayMifuShrimp(targChannel);
+    }
+
+
     if (msgLower == 'ayy') {
         message.channel.send("ayy lmao");
     } else if (msgLower == 'maybe') {
         message.channel.send("or maybe not");
     } else if (message.author.id == CASTIE_ID) {
-        let serverID = message.guild.id;
+        let guildID = message.guild.id;
         let channelID = message.channel.id;
 
         const allowed = (element) => element == channelID;
+        
 
-        if (serverID != ARK_SERVER_ID) {
+        if (guildID != ARK_GUILD_ID) {
             
             sayCute(message);
         } else {
