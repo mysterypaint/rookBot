@@ -194,6 +194,9 @@ client.on('messageCreate', (message) => {
         let outStr = msgContent.replaceAll("vxtwitter.com", "x.com");
         outStr = outStr.replaceAll("twitter.com", "x.com");
         outStr = outStr.replaceAll("x.com", "vxtwitter.com");
+
+        if (msgContent == outStr)
+            return;
         message.reply(outStr);
     }
 
