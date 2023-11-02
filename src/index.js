@@ -64,6 +64,18 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function isValidHttpUrl(string) {
+    let url;
+
+    try {
+        url = new URL(string);
+    } catch (_) {
+        return false;  
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
 function attachFile(fPath, name, description) {
     return [{
         attachment: fPath,
@@ -150,7 +162,19 @@ client.on('messageCreate', (message) => {
     }
 
     if (msgContent.includes('69')) {
-        message.channel.send("Nice");
+        if(message.embeds.length > 0) {
+            var embed = message.embeds[0];
+            console.log(message);
+            if(!embed.image) {
+                var tmpMsg = new String(message);
+                const reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+                tmpMsg = tmpMsg.replace(reg, '').trim();
+                console.log(tmpMsg);
+                if (tmpMsg.length > 0 && tmpMsg.includes('69'))
+                    message.channel.send("Nice");
+            }
+        } else if (!isValidHttpUrl(message))
+            message.channel.send("Nice");
     }
 
     if (msgContent.toLowerCase().includes('castle') || msgContent.includes('castIe')) {
@@ -195,19 +219,20 @@ client.on('messageCreate', (message) => {
         outStr = outStr.replaceAll("twitter.com", "x.com");
         outStr = outStr.replaceAll("x.com", "vxtwitter.com");
 
-        if (msgContent == outStr)
+        if (msgContent == outStr && msgContent != "twitter.com" && msgContent != "x.com")
             return;
-        message.reply(outStr);
+        
+        message.channel.send(outStr);
     }
 
     if (msgContent.toLowerCase().includes('tiktok.com')) {
         if (!msgContent.toLowerCase().includes('vxtiktok.com'))
-            message.reply(msgContent.replaceAll("tiktok.com", "vxtiktok.com"));
+            message.channel.send(msgContent.replaceAll("tiktok.com", "vxtiktok.com"));
     }
 
     if (msgContent.toLowerCase().includes('pixiv.net')) {
         if (!msgContent.toLowerCase().includes('phixiv.net'))
-            message.reply(msgContent.replaceAll("pixiv.net", "phixiv.net"));
+            message.channel.send(msgContent.replaceAll("pixiv.net", "phixiv.net"));
     }
 })
 
