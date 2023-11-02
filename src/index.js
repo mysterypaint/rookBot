@@ -123,71 +123,68 @@ client.on('messageCreate', (message) => {
     
     const msgContent = message.content;
      
-    let guildID = message.guild.id
-    if (guildID == ARK_GUILD_ID) {
-        mifuTimer--;
-        if (mifuTimer <= 0) {
-            var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-            let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
-            sayMifuShrimp(targChannel);
-            mifuTimer = getRandomInt(20, 200);
-        }
-        
-        okeiTimer--;
-        if (okeiTimer <= 0) {
-            var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-            let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
-            sayOkei(targChannel);
-            okeiTimer = getRandomInt(20, 300);
-        }
-        
-        yuptuneTimer--;
-        if (yuptuneTimer <= 0) {
-            let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
-            sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
-            yuptuneTimer = getRandomInt(200, 1000);
-        }
-
-        if (msgContent.includes('69')) {
-            message.channel.send("nice");
-        }
-
-        if (ayylmaoCooldownTimer <= 0) {
-            if (msgContent.toLowerCase() == 'ayy') {
-                message.channel.send("ayy lmao");
-                ayylmaoCooldownTimer = 1;
-            }
-        } else
-            ayylmaoCooldownTimer--;
-        
-        if (maybenotCooldownTimer <= 0) {
-            if (msgContent.toLowerCase() == 'maybe') {
-                message.channel.send("or maybe not");
-                maybenotCooldownTimer = 1;
-            }
-        } else
-            maybenotCooldownTimer--;
-
-        if (sayoriCooldownTimer <= 0) {
-            if (msgContent.toLowerCase().includes('sayori')) {
-                message.channel.send("(( sayori.jpg ))");
-                sayoriCooldownTimer = 1;
-            } 
-        } else
-            sayoriCooldownTimer--;
+    mifuTimer--;
+    if (mifuTimer <= 0) {
+        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
+        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
+        sayMifuShrimp(targChannel);
+        mifuTimer = getRandomInt(20, 200);
     }
+    
+    okeiTimer--;
+    if (okeiTimer <= 0) {
+        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
+        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
+        sayOkei(targChannel);
+        okeiTimer = getRandomInt(20, 300);
+    }
+    
+    yuptuneTimer--;
+    if (yuptuneTimer <= 0) {
+        let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
+        sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
+        yuptuneTimer = getRandomInt(200, 1000);
+    }
+
+    if (msgContent.includes('69')) {
+        message.channel.send("nice");
+    }
+
+    if (msgContent.toLowerCase().includes('castle')) {
+        message.react('<:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>');
+    }
+
+    if (ayylmaoCooldownTimer <= 0) {
+        if (msgContent.toLowerCase() == 'ayy') {
+            message.channel.send("ayy lmao");
+            ayylmaoCooldownTimer = 1;
+        }
+    } else
+        ayylmaoCooldownTimer--;
+    
+    if (maybenotCooldownTimer <= 0) {
+        if (msgContent.toLowerCase() == 'maybe') {
+            message.channel.send("or maybe not");
+            maybenotCooldownTimer = 1;
+        }
+    } else
+        maybenotCooldownTimer--;
+
+    if (sayoriCooldownTimer <= 0) {
+        if (msgContent.toLowerCase().includes('sayori')) {
+            message.channel.send("(( sayori.jpg ))");
+            sayoriCooldownTimer = 1;
+        } 
+    } else
+        sayoriCooldownTimer--;
 
     if (message.author.id == CASTIE_ID) {
         let guildID = message.guild.id;
         let channelID = message.channel.id;
         let allowed = (element) => element == channelID;
         
-        if (guildID != ARK_GUILD_ID) {
+        if (allowedArkChannels.some(allowed))
             sayCute(message);
-        } else {
-            if (allowedArkChannels.some(allowed))
-                sayCute(message);
-        }
     }
 
     let msgAuthor = message.author
