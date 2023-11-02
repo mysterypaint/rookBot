@@ -11,8 +11,10 @@ A Javascript Bot for personal usage, written using Node.js
      * You can stop hosting using ``Ctrl + C`` on the command line window.
 
 ## Updating
-1. Clone (or ``git pull``) the latest version of the ``main`` branch of this repo.
-2. Execute ``launch.bat`` to re-host with the updated code.
+1. Ensure that you have a backup of your ``.env`` file.
+2. Clone (or ``git pull``) the latest version of the ``main`` branch of this repo.
+3. Copy your ``.env`` file to the root directory of the updated repo, if it isn't already there.
+4. Execute ``launch.bat`` to re-host with the updated code.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
