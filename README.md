@@ -9,7 +9,7 @@ A Javascript Bot for personal usage, written using Node.js
 4. Install Rest: ``npm install -g rest``
 5. Create a copy of ``.env_template`` and fill out all of your variables on each line. Rename your copied file to ``.env``, exactly as typed here.
 6. Finally, execute ``launch.bat`` to start the server.
-     * You can stop hosting using ``Ctrl + C`` on the command line window.
+     * You can stop hosting by pressing ``Ctrl + C`` twice in the command line window.
 
 ## Updating
 1. Ensure that you have a backup of your ``.env`` file.
@@ -18,6 +18,13 @@ A Javascript Bot for personal usage, written using Node.js
 4. Execute ``launch.bat`` to re-host with the updated code.
      * Alternatively, you can execute ``npm run start:dev`` or ``node ./src/index.js`` from Terminal/CLI.
      * ``npm run start:dev`` and ``launch.bat`` will automatically re-launch the bot if the code is updated in realtime.
+
+## Troubleshooting
+**DiscordAPIError[50001]: Missing Access**
+* Your guild permissions in ``.env`` are wrong, and you might even have the wrong ``GUILD_ID``.
+* You can adjust this via a text editor.
+* This might be probably due to switching ``.env`` keys and/or swapping bots.
+* Alternatively, you could try reinstalling Rest.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

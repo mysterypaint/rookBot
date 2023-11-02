@@ -22,7 +22,7 @@ const client = new Client({
 const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CASTIE_ID = process.env.CASTIE_ID;
-const ARK_GUILD_ID = process.env.ARK_GUILD_ID;
+const GUILD_ID = process.env.GUILD_ID;
 const ARK_CHANNEL_ID_BOTS = process.env.ARK_CHANNEL_ID_BOTS;
 const ARK_CHANNEL_ID_DA_CHAT = process.env.ARK_CHANNEL_ID_DA_CHAT;
 const ARK_CHANNEL_ID_HOTCHIP = process.env.ARK_CHANNEL_ID_HOTCHIP;
@@ -30,7 +30,6 @@ const ARK_CHANNEL_ID_ROOM3 = process.env.ARK_CHANNEL_ID_ROOM3;
 
 const ARK_WHITELISTED_CHANNEL_IDS = process.env.ARK_WHITELISTED_CHANNEL_IDS.split(", ");
 
-const PERSONAL_GUILD_ID = process.env.PERSONAL_GUILD_ID;
 const PERSONAL_CHANNEL_ID_GENERAL = process.env.PERSONAL_CHANNEL_ID_GENERAL;
 const PERSONAL_CHANNEL_ID_N = process.env.PERSONAL_CHANNEL_ID_N;
 
@@ -41,8 +40,6 @@ const OKEI_EMOTE_ID = process.env.OKEI_EMOTE_ID;
 const allowedArkChannels = [ ARK_CHANNEL_ID_BOTS, ARK_CHANNEL_ID_DA_CHAT, ARK_CHANNEL_ID_HOTCHIP];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
-
-const GUILD_ID = ARK_GUILD_ID;
 
 var mifuTimer = getRandomInt(20, 200);
 var okeiTimer = getRandomInt(20, 300);
