@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, Routes } from 'discord.js';
+import { REST } from 'discord.js';
 
 config();
 
@@ -11,13 +12,14 @@ const client = new Client({
     ],
 });
 const TOKEN = process.env.DISCORD_TOKEN;
+const CLIENT_ID = process.env.CLIENT_ID;
 const CASTIE_ID = process.env.CASTIE_ID;
-const ARK_SERVER_ID = process.env.ARK_SERVER_ID;
+const ARK_GUILD_ID = process.env.ARK_GUILD_ID;
 const ARK_CHANNEL_ID_BOTS = process.env.ARK_CHANNEL_ID_BOTS;
 const ARK_CHANNEL_ID_DA_CHAT = process.env.ARK_CHANNEL_ID_DA_CHAT;
 const ARK_CHANNEL_ID_HOTCHIP = process.env.ARK_CHANNEL_ID_HOTCHIP;
 
-const PERSONAL_SERVER_ID = process.env.PERSONAL_SERVER_ID;
+const PERSONAL_GUILD_ID = process.env.PERSONAL_GUILD_ID;
 const PERSONAL_CHANNEL_ID_GENERAL = process.env.PERSONAL_CHANNEL_ID_GENERAL;
 const PERSONAL_CHANNEL_ID_N = process.env.PERSONAL_CHANNEL_ID_N;
 
@@ -25,24 +27,47 @@ const MASHIRO_PRAY_EMOTE_ID = process.env.MASHIRO_PRAY_EMOTE_ID;
 
 const allowedArkChannels = [ ARK_CHANNEL_ID_BOTS, ARK_CHANNEL_ID_DA_CHAT, ARK_CHANNEL_ID_HOTCHIP];
 
+const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-client.login(TOKEN);
+const GUILD_ID = PERSONAL_GUILD_ID;
+
+client.on('ready', () => console.log(`${client.user.tag} has logged in!`));
+
+client.on('interactionCreate', (interaction) => {
+    if (interaction.isChatInputCommand()) {
+        console.log('Hello, world!');
+        interaction.reply({ content:'Hey there!!!' });
+    }
+});
+
+
+
+
+
+
+
+
+
 
 function sayCute(message) {
     const msgLower = message.content.toLowerCase();
     
     if (msgLower.includes('cute')) {
-        message.reply({content: 'cute... <:mashiropray:${MASHIRO_PRAY_EMOTE_ID}>'});
+        message.reply({content: 'cute... <:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>'});
     }
 }
 
 client.on('messageCreate', (message) => {
-    console.log(`${message.author.tag} has said`, `"${message.content}"`, `on`, message.createdAt.toDateString());
+    console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
     
     const msgLower = message.content.toLowerCase();
     const msgContent = message.content;
     
-    if (message.author.id == CASTIE_ID) {
+    if (msgLower == 'ayy') {
+        message.channel.send("ayy lmao");
+    } else if (msgLower == 'maybe') {
+        message.channel.send("or maybe not");
+    } else if (message.author.id == CASTIE_ID) {
         let serverID = message.guild.id;
         let channelID = message.channel.id;
 
@@ -93,3 +118,37 @@ client.on('messageCreate', (message) => {
         }
     }
 })
+
+
+
+
+
+
+
+
+
+
+async function main() {
+    const commands = [
+        {
+            name: `tutone`,
+            description: `Replies with pong!`,
+        },
+        {
+            name: `tuttwo`,
+            description: `Replies with pong!`,
+        },
+    ];
+
+    try {
+        console.log(`Started refreshing application (/) commands.`);
+        await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
+            body: commands,
+        });
+        client.login(TOKEN);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+main();
