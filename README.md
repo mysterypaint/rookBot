@@ -21,9 +21,8 @@ A Javascript Bot for personal usage, written using Node.js
 
 ## Troubleshooting
 **DiscordAPIError[50001]: Missing Access**
-* Your guild permissions in ``.env`` are wrong, and you might even have the wrong ``GUILD_ID``.
-* You can adjust this via a text editor.
-* This might be probably due to switching ``.env`` keys and/or swapping bots.
+* Your guild permissions in ``.env`` are wrong, and you might even have the wrong ``GUILD_ID``. This could occur after switching ``.env`` keys and/or swapping bots.
+    * You can adjust this via a text editor.
 * Alternatively, you could try reinstalling Rest.
 
 ## License
