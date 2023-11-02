@@ -147,7 +147,7 @@ client.on('messageCreate', (message) => {
     }
 
     if (msgContent.includes('69')) {
-        message.channel.send("nice");
+        message.channel.send("Nice");
     }
 
     if (msgContent.toLowerCase().includes('castle') || msgContent.includes('castIe')) {
