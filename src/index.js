@@ -104,90 +104,86 @@ function sayCute(message) {
 
 client.on(`interactionCreate`, (interaction) => {
     if (interaction.isChatInputCommand()) {
-        console.log('Chat Command');
         switch(interaction.commandName) {
             /*
             case 'sayori':
                 interaction.reply({
+                    content: 'Hey there!!!',
                     files: attachFile('src/img/memes/sayori.png', 'sayori.png', 'Sayori')
                 })
                 break;*/
             case 'yuptune':
                 interaction.reply({
-                    //content: 'Hey there!!!',
                     files: attachFile('src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune')
                 })
                 break;
-        }
-        //console.log(interaction.options.getString('food'));
-
-        console.log('Hello, world!');
-        
+        }        
     }
 });
-
 
 client.on('messageCreate', (message) => {
     console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
     
     const msgContent = message.content;
-    
-    mifuTimer--;
-    if (mifuTimer <= 0) {
-        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
-        sayMifuShrimp(targChannel);
-        mifuTimer = getRandomInt(20, 200);
-    }
-    
-    okeiTimer--;
-    if (okeiTimer <= 0) {
-        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
-        sayOkei(targChannel);
-        okeiTimer = getRandomInt(20, 300);
-    }
-    
-    yuptuneTimer--;
-    if (yuptuneTimer <= 0) {
-        let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
-        sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
-        yuptuneTimer = getRandomInt(200, 1000);
-    }
-
-    if (msgContent.includes('69')) {
-        message.channel.send("nice");
-    }
-
-    if (ayylmaoCooldownTimer <= 0) {
-        if (msgContent.toLowerCase() == 'ayy') {
-            message.channel.send("ayy lmao");
-            ayylmaoCooldownTimer = 1;
+     
+    let guildID = message.guild.id
+    if (guildID == ARK_GUILD_ID) {
+        mifuTimer--;
+        if (mifuTimer <= 0) {
+            var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
+            let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
+            sayMifuShrimp(targChannel);
+            mifuTimer = getRandomInt(20, 200);
         }
-    } else
-        ayylmaoCooldownTimer--;
-    
-    if (maybenotCooldownTimer <= 0) {
-        if (msgContent.toLowerCase() == 'maybe') {
-            message.channel.send("or maybe not");
-            maybenotCooldownTimer = 1;
+        
+        okeiTimer--;
+        if (okeiTimer <= 0) {
+            var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
+            let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
+            sayOkei(targChannel);
+            okeiTimer = getRandomInt(20, 300);
         }
-    } else
-        maybenotCooldownTimer--;
+        
+        yuptuneTimer--;
+        if (yuptuneTimer <= 0) {
+            let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
+            sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
+            yuptuneTimer = getRandomInt(200, 1000);
+        }
 
-    if (sayoriCooldownTimer <= 0) {
-        if (msgContent.toLowerCase().includes('sayori')) {
-            message.channel.send("(( sayori.jpg ))");
-            sayoriCooldownTimer = 1;
-        } 
-    } else
-        sayoriCooldownTimer--;
-    
+        if (msgContent.includes('69')) {
+            message.channel.send("nice");
+        }
+
+        if (ayylmaoCooldownTimer <= 0) {
+            if (msgContent.toLowerCase() == 'ayy') {
+                message.channel.send("ayy lmao");
+                ayylmaoCooldownTimer = 1;
+            }
+        } else
+            ayylmaoCooldownTimer--;
+        
+        if (maybenotCooldownTimer <= 0) {
+            if (msgContent.toLowerCase() == 'maybe') {
+                message.channel.send("or maybe not");
+                maybenotCooldownTimer = 1;
+            }
+        } else
+            maybenotCooldownTimer--;
+
+        if (sayoriCooldownTimer <= 0) {
+            if (msgContent.toLowerCase().includes('sayori')) {
+                message.channel.send("(( sayori.jpg ))");
+                sayoriCooldownTimer = 1;
+            } 
+        } else
+            sayoriCooldownTimer--;
+    }
+
     if (message.author.id == CASTIE_ID) {
         let guildID = message.guild.id;
         let channelID = message.channel.id;
         let allowed = (element) => element == channelID;
-        
         
         if (guildID != ARK_GUILD_ID) {
             sayCute(message);
@@ -195,20 +191,6 @@ client.on('messageCreate', (message) => {
             if (allowedArkChannels.some(allowed))
                 sayCute(message);
         }
-        
-//const img = message.channel.send({ files: [{ attachment: img.toBuffer(), name: 'newName.png' }] });
-
-        
-
-        //const attachment = new MessageAttachment("src/img/memes/sayori.jpg"); //ex. https://i.imgur.com/random.jpg
-
-        //message.channel.send({ content: "I sent you a photo!", files: [attachment] })
-        /*
-        let server = message.guild.id;
-        let channel = message.channel.id;
-
-        message.reply("server: " + server + "\nchannel: " + channel);*/
-        //message.reply(message.author.id);
     }
 
     let msgAuthor = message.author
@@ -233,7 +215,6 @@ client.on('messageCreate', (message) => {
         }
     }
 })
-
 
 async function main() {
     const commands = [
