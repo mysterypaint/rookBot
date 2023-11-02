@@ -2,7 +2,7 @@
 A Javascript Bot for personal usage, written using Node.js
 
 ## Setting up
-1. Clone the repo
+1. Clone the repo: ``git clone --recursive https://github.com/mysterypaint/rookBot``
 2. Install [Node.js: https://nodejs.org/](https://nodejs.org/)
      * During installation setup, ensure you check "Automatically install the necessary tools."
 3. Install nodemon: ``npm install -D nodemon``
