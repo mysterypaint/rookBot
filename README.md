@@ -3,12 +3,13 @@ A Javascript Bot for personal usage, written using Node.js
 
 ## Setting up
 1. Clone the repo: ``git clone --recursive https://github.com/mysterypaint/rookBot``
-2. Install [Node.js: https://nodejs.org/](https://nodejs.org/)
+2. Navigate to the repo's root directory: ``cd rookBot``
+3. Install [Node.js: https://nodejs.org/](https://nodejs.org/)
      * During installation setup, ensure you check "Automatically install the necessary tools."
-3. Install nodemon: ``npm install -D nodemon``
-4. Install Rest: ``npm install -g rest``
-5. Create a copy of ``.env_template`` and fill out all of your variables on each line. Rename your copied file to ``.env``, exactly as typed here.
-6. Finally, execute ``launch.bat`` to start the server.
+4. While still in the repo's root directory, install nodemon: ``npm install -D nodemon``
+5. Install Rest: ``npm install -g rest``
+6. Create a copy of ``.env_template`` and fill out all of your variables on each line. Rename your copied file to ``.env``, exactly as typed here.
+7. Finally, execute ``launch.bat`` to start the server.
      * You can stop hosting by pressing ``Ctrl + C`` twice in the command line window.
 
 ## Updating
