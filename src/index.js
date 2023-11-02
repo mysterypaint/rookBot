@@ -150,7 +150,7 @@ client.on('messageCreate', (message) => {
         message.channel.send("nice");
     }
 
-    if (msgContent.toLowerCase().includes('castle')) {
+    if (msgContent.toLowerCase().includes('castle') || msgContent.includes('castIe')) {
         message.react('<:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>');
     }
 
