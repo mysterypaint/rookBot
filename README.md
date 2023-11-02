@@ -11,7 +11,7 @@ A Javascript Bot for personal usage, written using Node.js
      * You can stop hosting using ``Ctrl + C`` on the command line window.
 
 ## Updating
-1. Clone (or ``git pull`` the latest version of the ``main`` branch of this repo.
+1. Clone (or ``git pull``) the latest version of the ``main`` branch of this repo.
 2. Execute ``launch.bat`` to re-host with the updated code.
 
 ## License
