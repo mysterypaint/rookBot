@@ -1,6 +1,14 @@
 import { config } from 'dotenv';
-import { Client, GatewayIntentBits, Routes } from 'discord.js';
-import { REST } from 'discord.js';
+import { 
+    Client,
+    GatewayIntentBits,
+    InteractionType,
+    Routes,
+    SlashCommandBuilder
+} from 'discord.js';
+import { REST } from '@discordjs/rest';
+//import sayoriCommand from './commands/sayori.js';
+import yuptuneCommand from './commands/yuptune.js';
 
 config();
 
@@ -18,6 +26,8 @@ const ARK_GUILD_ID = process.env.ARK_GUILD_ID;
 const ARK_CHANNEL_ID_BOTS = process.env.ARK_CHANNEL_ID_BOTS;
 const ARK_CHANNEL_ID_DA_CHAT = process.env.ARK_CHANNEL_ID_DA_CHAT;
 const ARK_CHANNEL_ID_HOTCHIP = process.env.ARK_CHANNEL_ID_HOTCHIP;
+const ARK_CHANNEL_ID_ROOM3 = process.env.ARK_CHANNEL_ID_ROOM3;
+
 const ARK_WHITELISTED_CHANNEL_IDS = process.env.ARK_WHITELISTED_CHANNEL_IDS.split(", ");
 
 const PERSONAL_GUILD_ID = process.env.PERSONAL_GUILD_ID;
@@ -26,66 +36,128 @@ const PERSONAL_CHANNEL_ID_N = process.env.PERSONAL_CHANNEL_ID_N;
 
 const MASHIRO_PRAY_EMOTE_ID = process.env.MASHIRO_PRAY_EMOTE_ID;
 const MIFU_SHRIMP_EMOTE_ID = process.env.MIFU_SHRIMP_EMOTE_ID;
+const OKEI_EMOTE_ID = process.env.OKEI_EMOTE_ID;
 
 const allowedArkChannels = [ ARK_CHANNEL_ID_BOTS, ARK_CHANNEL_ID_DA_CHAT, ARK_CHANNEL_ID_HOTCHIP];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-const GUILD_ID = PERSONAL_GUILD_ID;
+const GUILD_ID = ARK_GUILD_ID;
 
-var mifuTimer = 200;
-const mifuTimerReset = 200;
+var mifuTimer = getRandomInt(20, 200);
+var okeiTimer = getRandomInt(20, 300);
+var yuptuneTimer = getRandomInt(200, 2000);
 
 client.on('ready', () => console.log(`${client.user.tag} has logged in!`));
 
-client.on('interactionCreate', (interaction) => {
-    if (interaction.isChatInputCommand()) {
-        console.log('Hello, world!');
-        interaction.reply({ content:'Hey there!!!' });
-    }
-});
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
+function attachFile(fPath, name, description) {
+    return [{
+        attachment: fPath,
+        name: name,
+        description: description,
+    }];
+}
 
-
-
-
-
-
-
-
+function sendLocalFile(channel, fPath, name, description) {
+    channel.send({
+        files: [{
+          attachment: fPath,
+          name: name,
+          description: description,
+        }]
+      })
+        .then(console.log)
+        .catch(console.error);
+}
 
 function sayMifuShrimp(channel) {
     channel.send('<:mifushrimp:' + MIFU_SHRIMP_EMOTE_ID + '>');
-    mifuTimer = mifuTimerReset;
+}
+
+function sayOkei(channel) {
+    channel.send('<:okei:' + OKEI_EMOTE_ID + '>');
 }
 
 function sayCute(message) {
-    const msgLower = message.content.toLowerCase();
-    
-    if (msgLower.includes('cute')) {
+    const msgContent = message.content;
+    if (msgContent.toLowerCase().includes('cute')) {
         message.reply({content: 'cute... <:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>'});
     }
 }
 
+client.on(`interactionCreate`, (interaction) => {
+    if (interaction.isChatInputCommand()) {
+        console.log('Chat Command');
+        switch(interaction.commandName) {
+            /*
+            case 'sayori':
+                interaction.reply({
+                    files: attachFile('src/img/memes/sayori.png', 'sayori.png', 'Sayori')
+                })
+                break;*/
+            case 'yuptune':
+                interaction.reply({
+                    //content: 'Hey there!!!',
+                    files: attachFile('src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune')
+                })
+                break;
+        }
+        //console.log(interaction.options.getString('food'));
+
+        console.log('Hello, world!');
+        
+    }
+});
+
+
 client.on('messageCreate', (message) => {
     console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
     
-    const msgLower = message.content.toLowerCase();
     const msgContent = message.content;
     
     mifuTimer--;
     if (mifuTimer <= 0) {
         var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-        
-        //sayMifuShrimp(client.channels.fetch(parseInt(randomWhitelistedChannel)));
         let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
         sayMifuShrimp(targChannel);
+        mifuTimer = getRandomInt(20, 200);
+    }
+    
+    okeiTimer--;
+    if (okeiTimer <= 0) {
+        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
+        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
+        sayOkei(targChannel);
+        okeiTimer = getRandomInt(20, 300);
+    }
+    
+    yuptuneTimer--;
+    if (yuptuneTimer <= 0) {
+        let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
+        sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
+        yuptuneTimer = getRandomInt(200, 2000);
     }
 
+    if (msgContent.includes('69')) {
+        message.channel.send("nice");
+    }
 
-    if (msgLower == 'ayy') {
+    if (msgContent.toLowerCase() == 'ayy') {
         message.channel.send("ayy lmao");
-    } else if (msgLower == 'maybe') {
+    } else if (msgContent.toLowerCase() == 'maybe') {
         message.channel.send("or maybe not");
     } else if (message.author.id == CASTIE_ID) {
         let guildID = message.guild.id;
@@ -93,9 +165,8 @@ client.on('messageCreate', (message) => {
 
         const allowed = (element) => element == channelID;
         
-
+        
         if (guildID != ARK_GUILD_ID) {
-            
             sayCute(message);
         } else {
             if (allowedArkChannels.some(allowed))
@@ -120,54 +191,40 @@ client.on('messageCreate', (message) => {
     let msgAuthor = message.author
     let clientID = client.user.id
     if (msgAuthor.id != clientID) {
-        if (msgLower.includes('x.com')) {
-            if (!msgLower.includes('vxtwitter.com'))
+        if (msgContent.toLowerCase().includes('x.com')) {
+            if (!msgContent.toLowerCase().includes('vxtwitter.com'))
                 message.reply(msgContent.replaceAll("x.com", "vxtwitter.com"));
-        } else if (msgLower.includes('twitter.com')) {
-            if (!msgLower.includes('vxtwitter.com'))
+        } else if (msgContent.toLowerCase().includes('twitter.com')) {
+            if (!msgContent.toLowerCase().includes('vxtwitter.com'))
                 message.reply(msgContent.replaceAll("twitter.com", "vxtwitter.com"));
         }
 
-        if (msgLower.includes('tiktok.com')) {
-            if (!msgLower.includes('vxtiktok.com'))
+        if (msgContent.toLowerCase().includes('tiktok.com')) {
+            if (!msgContent.toLowerCase().includes('vxtiktok.com'))
                 message.reply(msgContent.replaceAll("tiktok.com", "vxtiktok.com"));
         }
 
-        if (msgLower.includes('pixiv.net')) {
-            if (!msgLower.includes('phixiv.net'))
+        if (msgContent.toLowerCase().includes('pixiv.net')) {
+            if (!msgContent.toLowerCase().includes('phixiv.net'))
                 message.reply(msgContent.replaceAll("pixiv.net", "phixiv.net"));
         }
     }
 })
 
 
-
-
-
-
-
-
-
-
 async function main() {
     const commands = [
-        {
-            name: `tutone`,
-            description: `Replies with pong!`,
-        },
-        {
-            name: `tuttwo`,
-            description: `Replies with pong!`,
-        },
+        //sayoriCommand,
+        yuptuneCommand,
     ];
 
     try {
-        console.log(`Started refreshing application (/) commands.`);
+        console.log('Started refreshing application (/) commands.');
         await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
             body: commands,
         });
         client.login(TOKEN);
-    } catch (err) {
+        } catch (err) {
         console.log(err);
     }
 }

@@ -12,10 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^2.0.1",
-    "discord.js": "^14.13.0"
+    "discord.js": "^14.13.0",
+    "rest": "^2.0.0"
   },
   "type": "module",
   "devDependencies": {
+    "@types/node": "^20.8.10",
     "dotenv": "^16.3.1",
     "nodemon": "^3.0.1"
   }
