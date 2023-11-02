@@ -167,14 +167,22 @@ client.on('messageCreate', (message) => {
             console.log(message);
             if(!embed.image) {
                 var tmpMsg = new String(message);
-                const reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+                let reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+                tmpMsg = tmpMsg.replace(reg, '').trim();
+                reg = /<:*.+:\d+>/gm;
                 tmpMsg = tmpMsg.replace(reg, '').trim();
                 console.log(tmpMsg);
                 if (tmpMsg.length > 0 && tmpMsg.includes('69'))
                     message.channel.send("Nice");
             }
-        } else if (!isValidHttpUrl(message))
-            message.channel.send("Nice");
+        } else if (!isValidHttpUrl(message)) {
+            let reg = /<:*.+:\d+>/gm;
+            var tmpMsg = new String(message);
+            tmpMsg = tmpMsg.replace(reg, '').trim();
+            console.log(tmpMsg);
+            if (tmpMsg.includes('69'))
+                message.channel.send("Nice");
+        }
     }
 
     if (msgContent.toLowerCase().includes('castle') || msgContent.includes('castIe')) {
@@ -210,8 +218,13 @@ client.on('messageCreate', (message) => {
         let channelID = message.channel.id;
         let allowed = (element) => element == channelID;
         
-        if (allowedArkChannels.some(allowed))
+        if (msgContent.includes('sleeve')) {
+            message.channel.send({files: attachFile('src/vids/memes/bomb.mov', 'bomb.mov', 'bomb.mov')});
+        }
+        /*
+        if (allowedArkChannels.some(allowed)) {
             sayCute(message);
+        }*/
     }
 
     if (msgContent.toLowerCase().includes('x.com') || msgContent.toLowerCase().includes('twitter.com')) {
