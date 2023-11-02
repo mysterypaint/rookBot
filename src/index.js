@@ -119,6 +119,9 @@ client.on(`interactionCreate`, (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
+    if(message.author.bot)
+        return;
+
     console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
     
     const msgContent = message.content;
@@ -187,26 +190,21 @@ client.on('messageCreate', (message) => {
             sayCute(message);
     }
 
-    let msgAuthor = message.author
-    let clientID = client.user.id
-    if (msgAuthor.id != clientID) {
-        if (msgContent.toLowerCase().includes('x.com')) {
-            if (!msgContent.toLowerCase().includes('vxtwitter.com'))
-                message.reply(msgContent.replaceAll("x.com", "vxtwitter.com"));
-        } else if (msgContent.toLowerCase().includes('twitter.com')) {
-            if (!msgContent.toLowerCase().includes('vxtwitter.com'))
-                message.reply(msgContent.replaceAll("twitter.com", "vxtwitter.com"));
-        }
+    if (msgContent.toLowerCase().includes('x.com') || msgContent.toLowerCase().includes('twitter.com')) {
+        let outStr = msgContent.replaceAll("vxtwitter.com", "x.com");
+        outStr = outStr.replaceAll("twitter.com", "x.com");
+        outStr = outStr.replaceAll("x.com", "vxtwitter.com");
+        message.reply(outStr);
+    }
 
-        if (msgContent.toLowerCase().includes('tiktok.com')) {
-            if (!msgContent.toLowerCase().includes('vxtiktok.com'))
-                message.reply(msgContent.replaceAll("tiktok.com", "vxtiktok.com"));
-        }
+    if (msgContent.toLowerCase().includes('tiktok.com')) {
+        if (!msgContent.toLowerCase().includes('vxtiktok.com'))
+            message.reply(msgContent.replaceAll("tiktok.com", "vxtiktok.com"));
+    }
 
-        if (msgContent.toLowerCase().includes('pixiv.net')) {
-            if (!msgContent.toLowerCase().includes('phixiv.net'))
-                message.reply(msgContent.replaceAll("pixiv.net", "phixiv.net"));
-        }
+    if (msgContent.toLowerCase().includes('pixiv.net')) {
+        if (!msgContent.toLowerCase().includes('phixiv.net'))
+            message.reply(msgContent.replaceAll("pixiv.net", "phixiv.net"));
     }
 })
 
