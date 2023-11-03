@@ -144,7 +144,7 @@ async function consolidateTweets(capturedURLs, allMediaURLs) {
             await message.channel.send({ embeds: [embeddedTweet] });*/       
         });
     } catch(error) {
-        message.channel.send("Could not resolve to host :sob: :broken_heart:");
+        message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => { console.log(err) });
     }
 
 	return new Promise((resolve, reject) => {
@@ -160,9 +160,9 @@ async function postTweetURLs(capturedURLs, message) {
     consolidateTweets(capturedURLs, allMediaURLs).then(value => {
         message.channel.send({ //content: "<http://twitter.com/" + username + ">",
             files: allMediaURLs,
-        });
+        }).catch((err) => { console.log(err) });
     }).catch(error => {
-        message.channel.send("Could not resolve to host :sob: :broken_heart:");
+        message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => { console.log(err) });
     });
 
     
@@ -233,7 +233,7 @@ client.on('messageCreate', (message) => {
                 tmpMsg = tmpMsg.replace(reg, '').trim();
                 console.log(tmpMsg);
                 if (tmpMsg.length > 0 && tmpMsg.includes('69'))
-                    message.channel.send("Nice");
+                    message.channel.send("Nice").catch((err) => { console.log(err) });
             }
         } else if (!isValidHttpUrl(message)) {
             let reg = /<:*.+:\d+>/gm;
@@ -241,7 +241,7 @@ client.on('messageCreate', (message) => {
             tmpMsg = tmpMsg.replace(reg, '').trim();
             console.log(tmpMsg);
             if (tmpMsg.includes('69'))
-                message.channel.send("Nice");
+                message.channel.send("Nice").catch((err) => { console.log(err) });
         }
     }
 
@@ -251,7 +251,7 @@ client.on('messageCreate', (message) => {
 
     if (ayylmaoCooldownTimer <= 0) {
         if (msgContent.toLowerCase() == 'ayy') {
-            message.channel.send("ayy lmao");
+            message.channel.send("ayy lmao").catch((err) => { console.log(err) });
             ayylmaoCooldownTimer = 1;
         }
     } else
@@ -259,7 +259,7 @@ client.on('messageCreate', (message) => {
     
     if (maybenotCooldownTimer <= 0) {
         if (msgContent.toLowerCase() == 'maybe') {
-            message.channel.send("or maybe not");
+            message.channel.send("or maybe not").catch((err) => { console.log(err) });
             maybenotCooldownTimer = 1;
         }
     } else
@@ -267,7 +267,7 @@ client.on('messageCreate', (message) => {
 
     if (sayoriCooldownTimer <= 0) {
         if (msgContent.toLowerCase().includes('sayori')) {
-            message.channel.send("(( sayori.jpg ))");
+            message.channel.send("(( sayori.jpg ))").catch((err) => { console.log(err) });
             sayoriCooldownTimer = 1;
         } 
     } else
@@ -279,7 +279,7 @@ client.on('messageCreate', (message) => {
         let allowed = (element) => element == channelID;
         
         if (msgContent.includes('sleeve')) {
-            message.channel.send({files: attachFile('src/vids/memes/bomb.mov', 'bomb.mov', 'bomb.mov')});
+            message.channel.send({files: attachFile('src/vids/memes/bomb.mov', 'bomb.mov', 'bomb.mov')}).catch((err) => { console.log(err) });
         }
         /*
         if (allowedArkChannels.some(allowed)) {
@@ -308,11 +308,11 @@ client.on('messageCreate', (message) => {
                 if (msgContent.length < posAfterDomain) {
                     // meme
                     isVXMeme = true;
-                    message.channel.send('Correct.');
+                    message.channel.send('Correct.').catch((err) => { console.log(err) });
                 } else if (msgContent[posAfterDomain + 12] != '/') {
                     // meme
                     isVXMeme = true;
-                    message.channel.send('Correct.');
+                    message.channel.send('Correct.').catch((err) => { console.log(err) });
                 }
             }
         } else {
@@ -321,22 +321,22 @@ client.on('messageCreate', (message) => {
                 if (msgContent.length < posAfterDomain) {
                     // meme
                     isVXMeme = true;
-                    message.channel.send('vxtwitter.com');
+                    message.channel.send('vxtwitter.com').catch((err) => { console.log(err) });
                 } else if (msgContent[posAfterDomain + 4] != '/') {
                     // meme
                     isVXMeme = true;
-                    message.channel.send('vxtwitter.com');
+                    message.channel.send('vxtwitter.com').catch((err) => { console.log(err) });
                 }
             } else if (msgContent.toLowerCase().includes('twitter.com')) {
                 var posAfterDomain = msgContent.toLowerCase().indexOf('twitter.com') + 1;
                 if (msgContent.length < posAfterDomain) {
                     // meme
                     isVXMeme = true;
-                    message.channel.send('vxtwitter.com');
+                    message.channel.send('vxtwitter.com').catch((err) => { console.log(err) });
                 } else if (msgContent[posAfterDomain + 10] != '/') {
                     // meme
                     isVXMeme = true;
-                    message.channel.send('vxtwitter.com');
+                    message.channel.send('vxtwitter.com').catch((err) => { console.log(err) });
                 }
             }
         }
@@ -355,9 +355,9 @@ client.on('messageCreate', (message) => {
             var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
             if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
                 if (isMentionedDomain)
-                    message.channel.send('vxtwitter.com');
+                    message.channel.send('vxtwitter.com').catch((err) => { console.log(err) });
                 else
-                    message.channel.send(capturedURLs[0]);
+                    message.channel.send(capturedURLs[0]).catch((err) => { console.log(err) });
             } else
                 postTweetURLs(capturedURLs, message);
         }
@@ -366,12 +366,12 @@ client.on('messageCreate', (message) => {
 
     if (msgContent.toLowerCase().includes('tiktok.com')) {
         if (!msgContent.toLowerCase().includes('vxtiktok.com'))
-            message.channel.send(msgContent.replaceAll("tiktok.com", "vxtiktok.com"));
+            message.channel.send(msgContent.replaceAll("tiktok.com", "vxtiktok.com")).catch((err) => { console.log(err) });
     }
 
     if (msgContent.toLowerCase().includes('pixiv.net')) {
         if (!msgContent.toLowerCase().includes('phixiv.net'))
-            message.channel.send(msgContent.replaceAll("pixiv.net", "phixiv.net"));
+            message.channel.send(msgContent.replaceAll("pixiv.net", "phixiv.net")).catch((err) => { console.log(err) });
     }
 })
 
