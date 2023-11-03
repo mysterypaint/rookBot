@@ -252,7 +252,7 @@ client.on(`interactionCreate`, (interaction) => {
                                     diceSides.forEach(val => {
                                         diceTotalVal += val;
                                         diceStrSides += val;
-                                        
+
                                         if (i < numDice)
                                             diceStrSides += " + ";
                                         
@@ -289,7 +289,7 @@ client.on(`interactionCreate`, (interaction) => {
                         dieOrDice = " die ";
 
                     const diceRollEmbed = new EmbedBuilder()
-                    .setTitle(interaction.user.tag + " rolled " + numDice + dieOrDice + "with " + numSides + " sides:")
+                    .setTitle(interaction.user.displayName + " rolled " + numDice + dieOrDice + "with " + numSides + " sides:")
                     .setColor(0x0099FF)
                     .addFields(
                         { name: ' ', value: diceStr },
