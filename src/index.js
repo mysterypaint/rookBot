@@ -207,6 +207,7 @@ client.on(`interactionCreate`, (interaction) => {
                 let diceSides = [1, 1];
                 let diceTotalVal = 2;
 
+                try {
                     let inArgs = interaction.options.get('input').value.split('d');
 
                     if (inArgs.length == 2) {
@@ -269,6 +270,9 @@ client.on(`interactionCreate`, (interaction) => {
                     } else {
                         invalidInput = true;
                     }
+                } catch (err) {
+                    invalidInput = true;
+                }
 
                 if (invalidInput) {
                     interaction.reply("Invalid input.");
