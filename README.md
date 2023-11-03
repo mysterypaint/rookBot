@@ -8,8 +8,9 @@ A Javascript Bot for personal usage, written using Node.js
      * During installation setup, ensure you check "Automatically install the necessary tools."
 4. While still in the repo's root directory, install nodemon: ``npm install -D nodemon``
 5. Install Rest: ``npm install -g rest``
-6. Create a copy of ``.env_template`` and fill out all of your variables on each line. Rename your copied file to ``.env``, exactly as typed here.
-7. Finally, execute ``launch.bat`` to start the server.
+6. Install node-fetch: ``npm install node-fetch``
+7. Create a copy of ``.env_template`` and fill out all of your variables on each line. Rename your copied file to ``.env``, exactly as typed here.
+8. Finally, execute ``launch.bat`` to start the server.
      * Alternatively, you can execute ``npm run start:dev`` or ``node ./src/index.js`` from Terminal/CLI.
      * ``npm run start:dev`` and ``launch.bat`` will automatically re-launch the bot if the code is updated in realtime.
      * You can stop hosting by pressing ``Ctrl + C`` twice in the command line window.

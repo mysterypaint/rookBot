@@ -141,7 +141,7 @@ async function PostTweetURLs(capturedURLs, message) {
         });
         await message.channel.send({ embeds: [embeddedTweet] });*/        
     } catch(error) {
-        message.channel.send("Could not resolve to host :sob::broken_heart:");
+        message.channel.send("Could not resolve to host :sob: :broken_heart:");
     }
     //console.log(capturedURLs);
     
@@ -288,8 +288,14 @@ client.on('messageCreate', (message) => {
             capturedURLs.push(element);
         });
 
-        if (msgContent.toLowerCase().startsWith("vx")) {
-            message.channel.send(capturedURLs[0]);
+        console.log(capturedURLs);
+        
+        var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
+        if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
+            if (isMentionedDomain)
+                message.channel.send('vxtwitter.com'); // meme
+            else
+                message.channel.send(capturedURLs[0]);
         } else
             PostTweetURLs(capturedURLs, message);
     }
