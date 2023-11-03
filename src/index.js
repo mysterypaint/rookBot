@@ -141,7 +141,7 @@ async function PostTweetURLs(capturedURLs, message) {
         });
         await message.channel.send({ embeds: [embeddedTweet] });*/        
     } catch(error) {
-        message.channel.send("Could not resolve to host: ", `${error}`);
+        message.channel.send("Could not resolve to host :sob::broken_heart:");
     }
     //console.log(capturedURLs);
     
