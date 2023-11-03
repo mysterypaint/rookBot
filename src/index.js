@@ -317,18 +317,22 @@ client.on('messageCreate', (message) => {
      
     mifuTimer--;
     if (mifuTimer <= 0) {
-        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
-        sayMifuShrimp(targChannel);
-        mifuTimer = getRandomInt(200, 250);
+        if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
+            let targChannel = message.channel;//.channels.cache.get(randomWhitelistedChannel);
+
+            sayMifuShrimp(targChannel);
+            mifuTimer = getRandomInt(200, 250);
+        }
     }
     
     okeiTimer--;
     if (okeiTimer <= 0) {
-        var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
-        let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
-        sayOkei(targChannel);
-        okeiTimer = getRandomInt(300, 350);
+        if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
+            let targChannel = message.channel;//.channels.cache.get(randomWhitelistedChannel);
+
+            sayOkei(targChannel);
+            okeiTimer = getRandomInt(300, 350);
+        }
     }
     
     yuptuneTimer--;
