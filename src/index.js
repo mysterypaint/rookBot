@@ -275,32 +275,38 @@ client.on('messageCreate', (message) => {
         let origUrl = msgContent.replaceAll(regex, "");
         outStr = outStr.replaceAll(regex, "");
 
-        if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com")
-            return;
+        var isVXTwit = false;
 
-        outStr = outStr.replaceAll("vxtwitter.com", "http://vxtwitter.com");
+        if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com") {
+            if (msgContent.toLowerCase() === 'vxtwitter.com') {
+                // meme
+                message.channel.send('Correct.');
+                isVXTwit = true;
+            }
+        }
 
-        regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+        if (!isVXTwit) {
+            outStr = outStr.replaceAll("vxtwitter.com", "http://vxtwitter.com");
 
-        let capturedURLs = [];
+            regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
-        outStr.match(regex).forEach((element) => {
-            capturedURLs.push(element);
-        });
+            let capturedURLs = [];
 
-        console.log(capturedURLs);
-        
-        var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
-        if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
-            if (isMentionedDomain)
-                message.channel.send('vxtwitter.com');
-            else
-                message.channel.send(capturedURLs[0]);
-        } else
-            PostTweetURLs(capturedURLs, message);
-    } else if (msgContent.toLowerCase() === 'vxtwitter.com') {
-        // meme
-        message.channel.send('Correct.');
+            outStr.match(regex).forEach((element) => {
+                capturedURLs.push(element);
+            });
+
+            console.log(capturedURLs);
+            
+            var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
+            if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
+                if (isMentionedDomain)
+                    message.channel.send('vxtwitter.com');
+                else
+                    message.channel.send(capturedURLs[0]);
+            } else
+                PostTweetURLs(capturedURLs, message);
+        }
     }
 
 
