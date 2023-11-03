@@ -9,6 +9,7 @@ import {
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 //import sayoriCommand from './commands/sayori.js';
+import diceRollCommand from './commands/diceRoll.js';
 import yuptuneCommand from './commands/yuptune.js';
 import fetch from 'node-fetch';
 
@@ -64,6 +65,12 @@ function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function strIsNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+        !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
 
 function isValidHttpUrl(string) {
@@ -185,6 +192,75 @@ client.on(`interactionCreate`, (interaction) => {
                 interaction.reply({
                     files: attachFile('src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune')
                 })
+                break;
+            case 'roll':
+                let invalidInput = false;
+                let numDice = 1;
+                let numSides = 6;
+                let diceStr = `• d1: 2\n• d2: 4`;
+
+                try {
+                    let inArgs = interaction.options.get('input').value.split('d');
+
+                    if (inArgs.length == 2) {
+                        numDice = inArgs[0];
+                        numSides = inArgs[1];
+                        
+                        if (strIsNumeric(numDice) && strIsNumeric(numSides)) {
+                            numDice = parseFloat(numDice);
+                            numSides = parseFloat(numSides);
+                            
+                            if (numDice > 0 && numSides > 0) {
+                                if (numDice > 15) {
+                                    interaction.reply("That's too many dice! (Max: 15)");
+                                    break;
+                                }
+
+                                diceStr = ``;
+                                for (let i = 0; i < numDice; i++) {
+                                    let thisSideValue = getRandomInt(1, numSides);
+                                    diceStr += `d` + (i+1).toString() + ": " + thisSideValue + "\n";
+                                }
+                            } else
+                                invalidInput = true;
+                        } else {
+                            invalidInput = true;
+                        }
+                    } else {
+                        invalidInput = true;
+                    }
+                } catch (err) {
+                    invalidInput = true;
+                }
+
+                if (invalidInput) {
+                    interaction.reply("Invalid input.");
+                } else {
+                    
+                    /*
+                    interaction.reply('One sec...');
+                    interaction.deleteReply();
+                    */
+                    
+                    let dieOrDice = " dice ";
+
+                    if (numDice == 1)
+                        dieOrDice = " die ";
+
+                    const diceRollEmbed = new EmbedBuilder()
+                    .setTitle(interaction.user.tag + " rolled " + numDice + dieOrDice + "with " + numSides + " sides:")
+                    .setColor(0x0099FF)
+                    .addFields(
+                        { name: ' ', value: diceStr },
+                    );
+                    
+                    //await interaction.reply({ content: 'Secret Pong!', ephemeral: true });
+                    
+                    interaction.reply({
+                        embeds: [diceRollEmbed],
+                        //files: attachFile('src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune')
+                    })
+                }
                 break;
         }        
     }
@@ -379,6 +455,7 @@ async function main() {
     const commands = [
         //sayoriCommand,
         yuptuneCommand,
+        diceRollCommand,
     ];
 
     try {
