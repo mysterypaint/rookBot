@@ -45,9 +45,9 @@ const allowedArkChannels = [ ARK_CHANNEL_ID_BOTS, ARK_CHANNEL_ID_DA_CHAT, ARK_CH
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-var mifuTimer = getRandomInt(20, 200);
-var okeiTimer = getRandomInt(20, 300);
-var yuptuneTimer = getRandomInt(200, 2000);
+var mifuTimer = getRandomInt(200, 250);
+var okeiTimer = getRandomInt(300, 350);
+var yuptuneTimer = getRandomInt(300, 500);
 
 var ayylmaoCooldownTimer = 0;
 var maybenotCooldownTimer = 0;
@@ -320,7 +320,7 @@ client.on('messageCreate', (message) => {
         var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
         let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
         sayMifuShrimp(targChannel);
-        mifuTimer = getRandomInt(20, 200);
+        mifuTimer = getRandomInt(200, 250);
     }
     
     okeiTimer--;
@@ -328,14 +328,14 @@ client.on('messageCreate', (message) => {
         var randomWhitelistedChannel = (ARK_WHITELISTED_CHANNEL_IDS[Math.floor(Math.random() * ARK_WHITELISTED_CHANNEL_IDS.length)]);
         let targChannel = message.client.channels.cache.get(randomWhitelistedChannel);
         sayOkei(targChannel);
-        okeiTimer = getRandomInt(20, 300);
+        okeiTimer = getRandomInt(300, 350);
     }
     
     yuptuneTimer--;
     if (yuptuneTimer <= 0) {
         let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
         sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
-        yuptuneTimer = getRandomInt(200, 1000);
+        yuptuneTimer = getRandomInt(300, 500);
     }
 
     if (msgContent.includes('69')) {
