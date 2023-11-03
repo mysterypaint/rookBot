@@ -10,6 +10,7 @@ import {
 import { REST } from '@discordjs/rest';
 //import sayoriCommand from './commands/sayori.js';
 import diceRollCommand from './commands/diceRoll.js';
+import diceRollListCommand from './commands/diceRollList.js';
 import yuptuneCommand from './commands/yuptune.js';
 import fetch from 'node-fetch';
 
@@ -194,12 +195,18 @@ client.on(`interactionCreate`, (interaction) => {
                 })
                 break;
             case 'roll':
+            case 'rolllist':
+                let isRollList = false;
+                if (interaction.commandName == 'rolllist')
+                    isRollList = true;
+
                 let invalidInput = false;
                 let numDice = 1;
                 let numSides = 6;
-                let diceStr = `• d1: 2\n• d2: 4`;
+                let diceStr = ` `;
+                let diceSides = [1, 1];
+                let diceTotalVal = 2;
 
-                try {
                     let inArgs = interaction.options.get('input').value.split('d');
 
                     if (inArgs.length == 2) {
@@ -216,10 +223,43 @@ client.on(`interactionCreate`, (interaction) => {
                                     break;
                                 }
 
-                                diceStr = ``;
+                                diceSides = [];
+
                                 for (let i = 0; i < numDice; i++) {
                                     let thisSideValue = getRandomInt(1, numSides);
-                                    diceStr += `d` + (i+1).toString() + ": " + thisSideValue + "\n";
+                                    diceSides.push(thisSideValue);
+                                }
+
+                                diceTotalVal = 0;
+                                let diceStrSides = ``;
+
+                                if (isRollList) {
+                                    // Handle /rolllist output
+                                    let i = 0;
+                                    diceSides.forEach(val => {
+                                        diceTotalVal += val;
+                                        diceStrSides += `d` + (i+1).toString() + ": " + val + "\n";
+                                        i++;
+                                    });
+
+                                    diceStr = `Total: ` + diceTotalVal + "\n" + diceStrSides;
+                                } else {
+                                    // Handle /roll output
+                                    diceStr = numDice + "d" + numSides + " = ";
+
+                                    let i = 1;
+                                    diceSides.forEach(val => {
+                                        diceTotalVal += val;
+                                        diceStrSides += val;
+
+                                        if (i < numSides - 4)
+                                            diceStrSides += " + ";
+                                        
+                                        i++;
+                                    });
+
+                                    diceStr += diceTotalVal + " (" + diceStrSides + ")";
+
                                 }
                             } else
                                 invalidInput = true;
@@ -229,9 +269,6 @@ client.on(`interactionCreate`, (interaction) => {
                     } else {
                         invalidInput = true;
                     }
-                } catch (err) {
-                    invalidInput = true;
-                }
 
                 if (invalidInput) {
                     interaction.reply("Invalid input.");
@@ -456,6 +493,7 @@ async function main() {
         //sayoriCommand,
         yuptuneCommand,
         diceRollCommand,
+        diceRollListCommand,
     ];
 
     try {
