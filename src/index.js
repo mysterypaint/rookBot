@@ -276,16 +276,51 @@ client.on('messageCreate', (message) => {
         outStr = outStr.replaceAll(regex, "");
 
         var isVXTwit = false;
+        var isVXMeme = false;
+
+        console.log(origUrl +", " + outStr);
 
         if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com") {
-            if (msgContent.toLowerCase() === 'vxtwitter.com') {
-                // meme
-                message.channel.send('Correct.');
+            if (msgContent.toLowerCase().includes('vxtwitter.com')) {
+                var posAfterDomain = msgContent.toLowerCase().indexOf('vxtwitter.com') + 1;
                 isVXTwit = true;
+                if (msgContent.length < posAfterDomain) {
+                    // meme
+                    isVXMeme = true;
+                    message.channel.send('Correct.');
+                } else if (msgContent[posAfterDomain + 12] != '/') {
+                    // meme
+                    isVXMeme = true;
+                    message.channel.send('Correct.');
+                }
+            }
+        } else {
+            if (msgContent.toLowerCase().includes('x.com')) {
+                var posAfterDomain = msgContent.toLowerCase().indexOf('x.com') + 1;
+                if (msgContent.length < posAfterDomain) {
+                    // meme
+                    isVXMeme = true;
+                    message.channel.send('vxtwitter.com');
+                } else if (msgContent[posAfterDomain + 4] != '/') {
+                    // meme
+                    isVXMeme = true;
+                    message.channel.send('vxtwitter.com');
+                }
+            } else if (msgContent.toLowerCase().includes('twitter.com')) {
+                var posAfterDomain = msgContent.toLowerCase().indexOf('twitter.com') + 1;
+                if (msgContent.length < posAfterDomain) {
+                    // meme
+                    isVXMeme = true;
+                    message.channel.send('vxtwitter.com');
+                } else if (msgContent[posAfterDomain + 10] != '/') {
+                    // meme
+                    isVXMeme = true;
+                    message.channel.send('vxtwitter.com');
+                }
             }
         }
 
-        if (!isVXTwit) {
+        if (!isVXTwit && !isVXMeme) {
             outStr = outStr.replaceAll("vxtwitter.com", "http://vxtwitter.com");
 
             regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
