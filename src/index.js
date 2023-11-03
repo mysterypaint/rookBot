@@ -252,8 +252,8 @@ client.on(`interactionCreate`, (interaction) => {
                                     diceSides.forEach(val => {
                                         diceTotalVal += val;
                                         diceStrSides += val;
-
-                                        if (i < numSides - 4)
+                                        
+                                        if (i < numDice)
                                             diceStrSides += " + ";
                                         
                                         i++;
