@@ -288,7 +288,7 @@ client.on('messageCreate', (message) => {
             capturedURLs.push(element);
         });
 
-        if (msgContent.toLowerCase()[0] == 'd') {
+        if (msgContent.toLowerCase().startsWith("vx")) {
             message.channel.send(capturedURLs[0]);
         } else
             PostTweetURLs(capturedURLs, message);
