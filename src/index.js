@@ -228,24 +228,25 @@ client.on('messageCreate', (message) => {
     }
 
     if (msgContent.toLowerCase().includes('x.com') || msgContent.toLowerCase().includes('twitter.com')) {
-        let outStr = msgContent.replaceAll("http://", "");
-        outStr = outStr.replaceAll("https://", "");
-        outStr = msgContent.replaceAll("vxtwitter.com", "x.com");
+        let outStr = new String(msgContent);
+        let regex = "/http?s\:\/\//gm";
+        outStr = outStr.replaceAll(regex, "");
+        outStr = outStr.replaceAll("vxtwitter.com", "x.com").trim();
         outStr = outStr.replaceAll("twitter.com", "x.com");
-        outStr = outStr.replaceAll("x.com", "vxtwitter.com").trim();
+        outStr = outStr.replaceAll("x.com", "vxtwitter.com");
 
-        let origUrl = msgContent.replaceAll("http://", "")
-        origUrl = origUrl.replaceAll("https://", "");
+        let origUrl = msgContent.replaceAll(regex, "");
 
-        outStr = msgContent.replaceAll("http://", "")
-        outStr = origUrl.replaceAll("https://", "");
+        outStr = outStr.replaceAll(regex, "");
+
+        console.log(outStr);
 
         if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com")
             return;
 
         outStr = outStr.replaceAll("vxtwitter.com", "http://vxtwitter.com");
 
-        let regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+        regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
         let capturedURLs = "";
 
