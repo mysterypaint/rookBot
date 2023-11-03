@@ -121,28 +121,51 @@ async function fetchTweetData(twitURL) {
     return jString;
 }
 
-async function PostTweetURLs(capturedURLs, message) {
-    
-    
+async function consolidateTweets(capturedURLs, allMediaURLs) {
     try {
-        const tweetJsonStr = await fetchTweetData(capturedURLs[0]);
-        let tweetObj = await JSON.parse(tweetJsonStr);
-        const mediaURLs = await tweetObj.mediaURLs;
-        const username = await tweetObj.user_screen_name;
-        await message.channel.send({ //content: "<http://twitter.com/" + username + ">",
-        files: mediaURLs,
-        });
+        capturedURLs.forEach(async thisURL => {
+        
+            let tweetJsonStr = await fetchTweetData(thisURL);
+            let tweetObj = await JSON.parse(tweetJsonStr);
+            let mediaURLs = await tweetObj.mediaURLs;
+            let username = await tweetObj.user_screen_name;
+            
+            await mediaURLs.forEach(element => {
+                allMediaURLs.push(element);
+            });
+            
 
-        /*
-        const embeddedTweet = await new EmbedBuilder()
-        .setColor("#42b6f4")
-        .addFields({
-        name: `http://twitter.com/` + username, value: ' ',
+            /*
+            const embeddedTweet = await new EmbedBuilder()
+            .setColor("#42b6f4")
+            .addFields({
+            name: `http://twitter.com/` + username, value: ' ',
+            });
+            await message.channel.send({ embeds: [embeddedTweet] });*/       
         });
-        await message.channel.send({ embeds: [embeddedTweet] });*/        
     } catch(error) {
         message.channel.send("Could not resolve to host :sob: :broken_heart:");
     }
+
+	return new Promise((resolve, reject) => {
+		if (capturedURLs.count > 10) return reject(new Error('You can\'t delete more than 10 Messages at a time.'));
+		setTimeout(() => resolve('Deleted 10 messages.'), 2_000);
+	});
+}
+
+async function postTweetURLs(capturedURLs, message) {
+    
+    const allMediaURLs = [];
+
+    consolidateTweets(capturedURLs, allMediaURLs).then(value => {
+        message.channel.send({ //content: "<http://twitter.com/" + username + ">",
+            files: allMediaURLs,
+        });
+    }).catch(error => {
+        message.channel.send("Could not resolve to host :sob: :broken_heart:");
+    });
+
+    
     //console.log(capturedURLs);
     
     //message.channel.send(capturedURLs[0]);
@@ -278,8 +301,6 @@ client.on('messageCreate', (message) => {
         var isVXTwit = false;
         var isVXMeme = false;
 
-        console.log(origUrl +", " + outStr);
-
         if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com") {
             if (msgContent.toLowerCase().includes('vxtwitter.com')) {
                 var posAfterDomain = msgContent.toLowerCase().indexOf('vxtwitter.com') + 1;
@@ -331,8 +352,6 @@ client.on('messageCreate', (message) => {
                 capturedURLs.push(element);
             });
 
-            console.log(capturedURLs);
-            
             var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
             if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
                 if (isMentionedDomain)
@@ -340,7 +359,7 @@ client.on('messageCreate', (message) => {
                 else
                     message.channel.send(capturedURLs[0]);
             } else
-                PostTweetURLs(capturedURLs, message);
+                postTweetURLs(capturedURLs, message);
         }
     }
 
