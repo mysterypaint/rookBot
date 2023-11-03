@@ -121,11 +121,7 @@ async function fetchTweetData(twitURL) {
     return jString;
 }
 
-async function PostTweetURLs(capturedURLs, outStr, regex, message) {
-    outStr.match(regex).forEach((element) => {
-        capturedURLs.push(element);
-    });
-    console.log(capturedURLs);
+async function PostTweetURLs(capturedURLs, message) {
     
     
     try {
@@ -288,7 +284,14 @@ client.on('messageCreate', (message) => {
 
         let capturedURLs = [];
 
-        PostTweetURLs(capturedURLs, outStr, regex, message);
+        outStr.match(regex).forEach((element) => {
+            capturedURLs.push(element);
+        });
+
+        if (msgContent.toLowerCase()[0] == 'd') {
+            message.channel.send(capturedURLs[0]);
+        } else
+            PostTweetURLs(capturedURLs, message);
     }
 
     if (msgContent.toLowerCase().includes('tiktok.com')) {
