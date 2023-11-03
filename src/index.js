@@ -129,7 +129,7 @@ async function PostTweetURLs(capturedURLs, message) {
         let tweetObj = await JSON.parse(tweetJsonStr);
         const mediaURLs = await tweetObj.mediaURLs;
         const username = await tweetObj.user_screen_name;
-        await message.channel.send({ content: "<http://twitter.com/" + username + ">",
+        await message.channel.send({ //content: "<http://twitter.com/" + username + ">",
         files: mediaURLs,
         });
 
