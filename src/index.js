@@ -232,12 +232,17 @@ client.on('messageCreate', (message) => {
         outStr = outStr.replaceAll("https://", "");
         outStr = msgContent.replaceAll("vxtwitter.com", "x.com");
         outStr = outStr.replaceAll("twitter.com", "x.com");
-        outStr = outStr.replaceAll("x.com", "vxtwitter.com");
+        outStr = outStr.replaceAll("x.com", "vxtwitter.com").trim();
 
-        let origUrl = msgContent.replaceAll("http://", "").replaceAll("https://", "");
+        let origUrl = msgContent.replaceAll("http://", "")
+        origUrl = origUrl.replaceAll("https://", "");
+
+        outStr = msgContent.replaceAll("http://", "")
+        outStr = origUrl.replaceAll("https://", "");
+
         if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com")
             return;
-        
+
         outStr = outStr.replaceAll("vxtwitter.com", "http://vxtwitter.com");
 
         let regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
@@ -248,7 +253,7 @@ client.on('messageCreate', (message) => {
             capturedURLs += element + "\n";
         });
 
-        console.log(capturedURLs);
+        //console.log(capturedURLs);
 
         
         message.channel.send(capturedURLs);
