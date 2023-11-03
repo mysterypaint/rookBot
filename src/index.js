@@ -1,14 +1,16 @@
 import { config } from 'dotenv';
 import { 
     Client,
+    EmbedBuilder,
     GatewayIntentBits,
     InteractionType,
     Routes,
-    SlashCommandBuilder
+    SlashCommandBuilder,
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 //import sayoriCommand from './commands/sayori.js';
 import yuptuneCommand from './commands/yuptune.js';
+import fetch from 'node-fetch';
 
 config();
 
@@ -109,6 +111,45 @@ function sayCute(message) {
     if (msgContent.toLowerCase().includes('cute')) {
         message.reply({content: 'cute... <:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>'});
     }
+}
+async function fetchTweetData(twitURL) {
+    twitURL = twitURL.replaceAll("vxtwitter\.com", "api.vxtwitter.com");
+    const response = await fetch(twitURL);
+    const data = await response.json();
+
+    var jString = JSON.stringify(data);
+    return jString;
+}
+
+async function PostTweetURLs(capturedURLs, outStr, regex, message) {
+    outStr.match(regex).forEach((element) => {
+        capturedURLs.push(element);
+    });
+    console.log(capturedURLs);
+    
+    
+    try {
+        const tweetJsonStr = await fetchTweetData(capturedURLs[0]);
+        let tweetObj = await JSON.parse(tweetJsonStr);
+        const mediaURLs = await tweetObj.mediaURLs;
+        const username = await tweetObj.user_screen_name;
+        await message.channel.send({ content: "<http://twitter.com/" + username + ">",
+        files: mediaURLs,
+        });
+
+        /*
+        const embeddedTweet = await new EmbedBuilder()
+        .setColor("#42b6f4")
+        .addFields({
+        name: `http://twitter.com/` + username, value: ' ',
+        });
+        await message.channel.send({ embeds: [embeddedTweet] });*/        
+    } catch(error) {
+        message.channel.send("Could not resolve to host: ", `${error}`);
+    }
+    //console.log(capturedURLs);
+    
+    //message.channel.send(capturedURLs[0]);
 }
 
 client.on(`interactionCreate`, (interaction) => {
@@ -236,10 +277,7 @@ client.on('messageCreate', (message) => {
         outStr = outStr.replaceAll("x.com", "vxtwitter.com");
 
         let origUrl = msgContent.replaceAll(regex, "");
-
         outStr = outStr.replaceAll(regex, "");
-
-        console.log(outStr);
 
         if (origUrl == outStr && origUrl != "twitter.com" && origUrl != "x.com")
             return;
@@ -248,16 +286,9 @@ client.on('messageCreate', (message) => {
 
         regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
-        let capturedURLs = "";
+        let capturedURLs = [];
 
-        outStr.match(regex).forEach((element) => {
-            capturedURLs += element + "\n";
-        });
-
-        //console.log(capturedURLs);
-
-        
-        message.channel.send(capturedURLs);
+        PostTweetURLs(capturedURLs, outStr, regex, message);
     }
 
     if (msgContent.toLowerCase().includes('tiktok.com')) {
