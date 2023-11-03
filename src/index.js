@@ -290,10 +290,14 @@ client.on('messageCreate', (message) => {
 
         console.log(capturedURLs);
         
-        var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
+        var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com' | msgContent.toLowerCase() === 'vxtwitter.com');
         if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
             if (isMentionedDomain)
-                message.channel.send('vxtwitter.com'); // meme
+                // meme
+                if (msgContent.toLowerCase() === 'vxtwitter.com')
+                    message.channel.send('Correct.');
+                else
+                    message.channel.send('vxtwitter.com');
             else
                 message.channel.send(capturedURLs[0]);
         } else
