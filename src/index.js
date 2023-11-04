@@ -12,7 +12,7 @@ import {
   import {
     REST
   } from '@discordjs/rest';
-  //import sayoriCommand from './commands/sayori.js';
+  import sayoriCommand from './commands/sayori.js';
   import diceRollCommand from './commands/diceRoll.js';
   import diceRollListCommand from './commands/diceRollList.js';
   import yuptuneCommand from './commands/yuptune.js';
@@ -59,6 +59,13 @@ import {
   var maybenotCooldownTimer = 0;
   var sayoriCooldownTimer = 0;
   
+  // Declare enums
+  const Websites = {
+    Twitter: 0,
+    Pixiv: 1,
+    Tiktok: 2,
+  }
+
   // Wait for the client to get ready; print to console when it logs in
   client.on('ready', () => console.log(`${client.user.tag} has logged in!`));
   
@@ -197,6 +204,17 @@ import {
   }
   
   /**
+  * Fetches and returns JSON data from the VXTwitter API
+  */
+ async function fetchPixivData(pixivURL) {
+   const response = await fetch(pixivURL);
+   const data = await response.json();
+ 
+   var jString = JSON.stringify(data);
+   return jString;
+ }
+  
+  /**
    * Iterates through each Twitter URL in the capturedURLs[] array,
    * fetches data from each of them,
    * and stores that data in the allMediaURLs[] array.
@@ -253,19 +271,122 @@ import {
       });
     });
   }
+
+  /**
+   * Iterates through each Twitter URL in the capturedURLs[] array,
+   * fetches data from each of them,
+   * and stores that data in the allMediaURLs[] array.
+   */
+  async function consolidatePixiv(capturedURLs, allMediaURLs, authorMetadata) {
+    try {
+      capturedURLs.forEach(async thisURL => {
+        if (thisURL.length > 2) {
+          let pixivJsonStr = await fetchPixivData(thisURL);
+          //console.log(pixivJsonStr);
+          let pixObj = await JSON.parse(pixivJsonStr);
+          //console.log(pixObj);
+          let mediaURLs = await pixObj.image_proxy_urls;
+          let authorName = await pixObj.author_name;
+          let authorID = await pixObj.author_id;
+
+          await mediaURLs.forEach(element => {
+            allMediaURLs.push(element);
+          });
+          
+          await authorMetadata.push(authorName, authorID);
+        } else {
+          authorMetadata.push(thisURL);
+        }
+      });
+    } catch (error) {
+      message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => {
+        console.log(err)
+      });
+    }
+  
+    return new Promise((resolve, reject) => {
+      if (capturedURLs.count > 10) return reject(new Error('You can\'t capture more than 10 Tweets at a time.'));
+      setTimeout(() => resolve('Posted 10 tweets.'), 2_000);
+    });
+  }
+
+  /**
+   * Posts all fetched media URLs from Twitter to Discord
+   */
+  async function getPixivPostData(capturedURLs, message) {
+  
+    const allMediaURLs = [];
+    const authorMetadata = [];
+    var contentOut;
+
+    if (capturedURLs.length <= 0)
+      return undefined;
+
+    consolidatePixiv(capturedURLs, allMediaURLs, authorMetadata).then(value => {
+      contentOut = "Artist: " + authorMetadata[1] + " (<https://www.pixiv.net/" + authorMetadata[0] + "/users/" + authorMetadata[2] + ">)" + "   |   Shared by: " + message.author.displayName;
+    
+        message.channel.send({ //content: "<http://twitter.com/" + username + ">",
+          content: contentOut,
+          files: allMediaURLs,
+        }).catch((err) => {
+          console.log(err)
+        });
+
+      /*
+      return new Promise(function(resolve, reject) {
+        // Only `delay` is able to resolve or reject the promise
+        setTimeout(function() {
+          resolve([contentOut, allMediaURLs]); // After 3 seconds, resolve the promise with value [contentOut, allMediaURLs]
+        }, 3000);
+      });*/
+    }).catch(error => {
+      console.log(error);
+      message.channel.send("Error grabbing post data :sob: :broken_heart:").catch((err) => {
+        console.log(err)
+      });
+    });
+  }
+
+  function scrapeURLs(inStr, website) {
+    let collectedURLs = [];
+
+    let regex = /.+/gm;
+
+    inStr = inStr.replaceAll(' ', '\n');
+
+    switch(website) {
+      case Websites.Twitter:
+        //inStr = inStr.replaceAll('vxtwitter', 'twitter');
+        //regex = /(vxtwitter|twitter|x)\.com\/.+/gm
+        inStr = inStr.replaceAll('https://', '');
+        inStr = inStr.replaceAll('http://', '');
+        regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+        break;
+      case Websites.Pixiv:
+        regex = /pixiv\.net\/.+/gm
+        break;
+      case Websites.Tiktok:
+        regex = /tiktok\.com\/.+/gm
+        break;
+    }
+
+    inStr.match(regex).forEach((element) => {
+      collectedURLs.push("https://" + element);
+    });
+
+    return collectedURLs;
+  }
   
   /// Listens to every single Discord bot-slash-message sent to the server the bot is on (e.g. "/roll <value>")
   client.on(`interactionCreate`, (interaction) => {
     // Handle Slash commands
     if (interaction.isChatInputCommand()) {
       switch (interaction.commandName) {
-        /*
         case 'sayori':
             interaction.reply({
-                content: 'Hey there!!!',
                 files: attachFile('src/img/memes/sayori.png', 'sayori.png', 'Sayori')
             })
-            break;*/
+            break;
         case 'yuptune':
           interaction.reply({
             files: attachFile('src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune')
@@ -475,7 +596,9 @@ import {
     // Replies "(( sayori.jpg ))" to anyone who mentions "sayori" anywhere in their message
     if (sayoriCooldownTimer <= 0) {
       if (msgContent.toLowerCase().includes('sayori')) {
-        message.channel.send("(( sayori.jpg ))").catch((err) => {
+        message.channel.send({
+            files: attachFile('src/img/memes/hang-in-there-doki-doki-literature-club.png', 'sayori.png', 'Sayori')
+          }).catch((err) => {
           console.log(err)
         });
         sayoriCooldownTimer = 1;
@@ -569,15 +692,7 @@ import {
   
       // Prepare the modified URLs to grab all of their data to post
       if (!isVXTwit && !isVXMeme) {
-        outStr = outStr.replaceAll("vxtwitter.com", "http://vxtwitter.com");
-  
-        regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
-  
-        let capturedURLs = [];
-  
-        outStr.match(regex).forEach((element) => {
-          capturedURLs.push(element);
-        });
+        let capturedURLs = scrapeURLs(outStr, Websites.Twitter);
   
         var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
         if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
@@ -612,17 +727,65 @@ import {
   
     // Fix all pixiv.net URLs with phixiv.net
     if (msgContent.toLowerCase().includes('pixiv.net')) {
+      let outStr = new String(msgContent);
+      let capturedURLs = scrapeURLs(outStr, Websites.Pixiv);
+      let validPhixURLs = [];
+      let allPixivData = [];
+      let postData = [];
+      capturedURLs = [capturedURLs[0]];
+      try{
+        capturedURLs.forEach(async thisURL => {
+          let regex = /pixiv\.net\/(\w\w)\/artworks\/(\d+)/g;
+          
+          var matches = [...thisURL.matchAll(regex)][0];
+          var lang = undefined;
+          var postID = undefined;
+          
+          if (matches != undefined) {
+            if (matches.length >= 2) {
+              if (matches[1].length == 2) {
+                lang = matches[1];
+              }
+              if (matches[2].length > 0 && matches[2].length < 12) {
+                postID = matches[2];
+              }
+
+              if (lang != undefined && postID != undefined) {
+                validPhixURLs.push(`https://www.phixiv.net/api/info?id=` + postID + `&language=` + lang, lang);
+              }
+              
+              // TODO: needs to be asynchronous
+              //postData = 
+              getPixivPostData(validPhixURLs, message);
+              message.delete();
+            } else {
+              console.log('Invalid URL: ' + thisURL);
+            }
+          }
+        })
+
+        //console.log(allPixivData);
+
+      } catch (error) {
+        console.log(error);
+        message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => {
+          console.log(err);
+        });
+      }
+      /*
       if (!msgContent.toLowerCase().includes('phixiv.net'))
         message.channel.send(msgContent.replaceAll("pixiv.net", "phixiv.net")).catch((err) => {
           console.log(err)
         });
+        */
     }
+  
   })
   
   async function main() {
     // Init all the Slash commands
     const commands = [
-      //sayoriCommand,
+      sayoriCommand,
       yuptuneCommand,
       diceRollCommand,
       diceRollListCommand,
