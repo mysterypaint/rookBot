@@ -74,6 +74,21 @@ function strIsNumeric(str) {
         !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
 
+function eatAllURLs(inStr) {
+    let reg = /<:*.+:\d+>/gm;
+    return inStr.replace(reg, '').trim();
+}
+
+function eatAllEmotes(inStr) {
+    let reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+    return inStr.replace(reg, '').trim();
+}
+
+function eatAllPings(inStr) {
+    let reg = /<@\&\d+>/gm;
+    return inStr.replace(reg, '').trim();
+}
+
 function isValidHttpUrl(string) {
     let url;
 
@@ -156,8 +171,8 @@ async function consolidateTweets(capturedURLs, allMediaURLs) {
     }
 
 	return new Promise((resolve, reject) => {
-		if (capturedURLs.count > 10) return reject(new Error('You can\'t delete more than 10 Messages at a time.'));
-		setTimeout(() => resolve('Deleted 10 messages.'), 2_000);
+		if (capturedURLs.count > 10) return reject(new Error('You can\'t capture more than 10 Tweets at a time.'));
+		setTimeout(() => resolve('Posted 10 tweets.'), 2_000);
 	});
 }
 
@@ -345,22 +360,23 @@ client.on('messageCreate', (message) => {
     if (msgContent.includes('69')) {
         if(message.embeds.length > 0) {
             var embed = message.embeds[0];
-            console.log(message);
             if(!embed.image) {
                 var tmpMsg = new String(message);
-                let reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
-                tmpMsg = tmpMsg.replace(reg, '').trim();
-                reg = /<:*.+:\d+>/gm;
-                tmpMsg = tmpMsg.replace(reg, '').trim();
+
+                tmpMsg = eatAllURLs(tmpMsg);
+                tmpMsg = eatAllEmotes(tmpMsg);                
+                tmpMsg = eatAllPings(tmpMsg);
+                
                 console.log(tmpMsg);
                 if (tmpMsg.length > 0 && tmpMsg.includes('69'))
                     message.channel.send("Nice").catch((err) => { console.log(err) });
             }
         } else if (!isValidHttpUrl(message)) {
-            let reg = /<:*.+:\d+>/gm;
             var tmpMsg = new String(message);
-            tmpMsg = tmpMsg.replace(reg, '').trim();
-            console.log(tmpMsg);
+            tmpMsg = eatAllURLs(tmpMsg);
+            tmpMsg = eatAllEmotes(tmpMsg);                
+            tmpMsg = eatAllPings(tmpMsg);
+
             if (tmpMsg.includes('69'))
                 message.channel.send("Nice").catch((err) => { console.log(err) });
         }
