@@ -277,7 +277,7 @@ import {
    * fetches data from each of them,
    * and stores that data in the allMediaURLs[] array.
    */
-  async function consolidatePixiv(capturedURLs, allMediaURLs, authorMetadata) {
+  async function consolidatePixiv(capturedURLs, unmodifiedURLs, allMediaURLs, authorMetadata) {
     try {
       capturedURLs.forEach(async thisURL => {
         if (thisURL.length > 2) {
@@ -293,7 +293,7 @@ import {
             allMediaURLs.push(element);
           });
           
-          await authorMetadata.push(authorName, authorID);
+          await authorMetadata.push(authorName, authorID, unmodifiedURLs[capturedURLs.indexOf(thisURL)]);
         } else {
           authorMetadata.push(thisURL);
         }
@@ -313,7 +313,7 @@ import {
   /**
    * Posts all fetched media URLs from Twitter to Discord
    */
-  async function getPixivPostData(capturedURLs, message) {
+  async function getPixivPostData(capturedURLs, unmodifiedURLs, message) {
   
     const allMediaURLs = [];
     const authorMetadata = [];
@@ -322,8 +322,8 @@ import {
     if (capturedURLs.length <= 0)
       return undefined;
 
-    consolidatePixiv(capturedURLs, allMediaURLs, authorMetadata).then(value => {
-      contentOut = "Artist: " + authorMetadata[1] + " (<https://www.pixiv.net/" + authorMetadata[0] + "/users/" + authorMetadata[2] + ">)" + "   |   Shared by: " + message.author.displayName;
+    consolidatePixiv(capturedURLs, unmodifiedURLs, allMediaURLs, authorMetadata).then(value => {
+      contentOut = "Artist: " + authorMetadata[1] + " (<https://www.pixiv.net/" + authorMetadata[0] + "/users/" + authorMetadata[2] + ">)" + "   |   Shared by: " + message.author.displayName + "\n<" + authorMetadata[3] + ">";
     
         message.channel.send({ //content: "<http://twitter.com/" + username + ">",
           content: contentOut,
@@ -377,6 +377,12 @@ import {
     return collectedURLs;
   }
   
+  function wrapURLs(inStr, regex) {
+    return inStr.replace(regex, function(url){ 
+      return '<' + url.trim() + '>';
+    }); 
+  }
+
   /// Listens to every single Discord bot-slash-message sent to the server the bot is on (e.g. "/roll <value>")
   client.on(`interactionCreate`, (interaction) => {
     // Handle Slash commands
@@ -730,14 +736,22 @@ import {
       let outStr = new String(msgContent);
       let capturedURLs = scrapeURLs(outStr, Websites.Pixiv);
       let validPhixURLs = [];
+      let unmodifiedURLs = [];
       let allPixivData = [];
       let postData = [];
       capturedURLs = [capturedURLs[0]];
+      let usrMsg = message.content;
+      
+      usrMsg = usrMsg.replaceAll('https://', '');
+      usrMsg = usrMsg.replaceAll('http://', '');
+      usrMsg = usrMsg.replaceAll('www.', '');
+      
+      let regex = /pixiv\.net\/(\w\w)\/artworks\/(\d+)/g;
+
       try{
         capturedURLs.forEach(async thisURL => {
-          let regex = /pixiv\.net\/(\w\w)\/artworks\/(\d+)/g;
-          
           var matches = [...thisURL.matchAll(regex)][0];
+
           var lang = undefined;
           var postID = undefined;
           
@@ -752,17 +766,32 @@ import {
 
               if (lang != undefined && postID != undefined) {
                 validPhixURLs.push(`https://www.phixiv.net/api/info?id=` + postID + `&language=` + lang, lang);
+                unmodifiedURLs.push(`https://www.pixiv.net/` + lang + `/artworks/` + postID);
               }
-              
+
               // TODO: needs to be asynchronous
               //postData = 
-              getPixivPostData(validPhixURLs, message);
-              message.delete();
+              getPixivPostData(validPhixURLs, unmodifiedURLs, message);
+              /*
+              
+              const reg = /\d{3}/g
+              const str = "Java323Scr995ip4894545t";
+              const newStr = str.replace(reg, "");
+              console.log(newStr);
+
+              message.edit({content: });*/
             } else {
               console.log('Invalid URL: ' + thisURL);
             }
           }
         })
+        message.delete();
+        // Below is a forbidden operation... gotta write a workaround
+        /*
+        message.edit({
+          content: wrapURLs(usrMsg, regex),
+        });
+        */
 
         //console.log(allPixivData);
 
