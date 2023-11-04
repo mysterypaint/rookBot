@@ -50,9 +50,9 @@ import {
   }).setToken(TOKEN);
   
   // Declare constants
-  const mifuChance = 0.02; // 0.2% chance of triggering mifushrimp
-  const okeiChance = 0.01; // 0.1% chance of triggering okei
-  const yuptuneChance = 0.0014; // Approx ~1/700 (0.014) chance of triggering yuptune
+  const mifuChance = 0.005; // 0.2% chance of triggering mifushrimp
+  const okeiChance = 0.0025; // 0.1% chance of triggering okei
+  const yuptuneChance = 0.00035; // Approx ~1/700 (0.014) chance of triggering yuptune
   
   // Declare vars
   var ayylmaoCooldownTimer = 0;
