@@ -360,7 +360,9 @@ import {
         //regex = /(vxtwitter|twitter|x)\.com\/.+/gm
         inStr = inStr.replaceAll('https://', '');
         inStr = inStr.replaceAll('http://', '');
-        regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+        regex = /(https?:\/\/(www\.)?)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+
+        console.log(inStr);
         break;
       case Websites.Pixiv:
         regex = /pixiv\.net\/.+/gm
