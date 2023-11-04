@@ -372,9 +372,14 @@ import {
         break;
     }
 
-    inStr.match(regex).forEach((element) => {
-      collectedURLs.push("https://" + element);
-    });
+    try {
+      inStr.match(regex).forEach((element) => {
+        collectedURLs.push("https://" + element);
+      });
+    } catch (err) {
+      console.log("Error parsing URL regex: " + err);
+      return -1;
+    }
 
     return collectedURLs;
   }
@@ -701,26 +706,27 @@ import {
       // Prepare the modified URLs to grab all of their data to post
       if (!isVXTwit && !isVXMeme) {
         let capturedURLs = scrapeURLs(outStr, Websites.Twitter);
-  
-        var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
-        if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
-          if (isMentionedDomain)
-            message.channel.send('vxtwitter.com').catch((err) => {
-              console.log(err)
-            });
-          else {
-            /*
-            message.channel.send(capturedURLs[0]).catch((err) => {
-              console.log(err)
-            });
-            */
-           
+        if (capturedURLs != -1) {
+          var isMentionedDomain = (msgContent.toLowerCase() === 'twitter.com' | msgContent.toLowerCase() === 'x.com');
+          if (msgContent.toLowerCase().startsWith("vx") || isMentionedDomain || capturedURLs.length <= 0) {
+            if (isMentionedDomain)
+              message.channel.send('vxtwitter.com').catch((err) => {
+                console.log(err)
+              });
+            else {
+              /*
+              message.channel.send(capturedURLs[0]).catch((err) => {
+                console.log(err)
+              });
+              */
+            
+              // Post the fetched data to the Discord channel
+              postTweetURLs(capturedURLs, message);
+            }
+          } else {
             // Post the fetched data to the Discord channel
             postTweetURLs(capturedURLs, message);
           }
-        } else {
-          // Post the fetched data to the Discord channel
-          postTweetURLs(capturedURLs, message);
         }
       }
     }
