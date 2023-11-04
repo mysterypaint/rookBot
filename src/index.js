@@ -45,9 +45,9 @@ const allowedArkChannels = [ ARK_CHANNEL_ID_BOTS, ARK_CHANNEL_ID_DA_CHAT, ARK_CH
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-var mifuTimer = getRandomInt(200, 250);
-var okeiTimer = getRandomInt(300, 350);
-var yuptuneTimer = getRandomInt(300, 500);
+const mifuChance = 0.02; // 0.2% chance of triggering mifushrimp
+const okeiChance = 0.01; // 0.1% chance of triggering okei
+const yuptuneChance = 0.0014; // Approx ~1/700 (0.014) chance of triggering yuptune
 
 var ayylmaoCooldownTimer = 0;
 var maybenotCooldownTimer = 0;
@@ -88,6 +88,10 @@ function eatAllPings(inStr) {
     let reg = /<@\&\d+>/gm;
     return inStr.replace(reg, '').trim();
 }
+
+function probability(n) {
+    return !!n && Math.random() <= n;
+};
 
 function isValidHttpUrl(string) {
     let url;
@@ -328,33 +332,27 @@ client.on('messageCreate', (message) => {
 
     console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
     
-    const msgContent = message.content;
-     
-    mifuTimer--;
-    if (mifuTimer <= 0) {
+    var msgContent = message.content;
+
+    if (probability(mifuChance)) {
         if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
             let targChannel = message.channel;//.channels.cache.get(randomWhitelistedChannel);
 
             sayMifuShrimp(targChannel);
-            mifuTimer = getRandomInt(200, 250);
         }
     }
     
-    okeiTimer--;
-    if (okeiTimer <= 0) {
+    if (probability(okeiChance)) {
         if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
             let targChannel = message.channel;//.channels.cache.get(randomWhitelistedChannel);
 
             sayOkei(targChannel);
-            okeiTimer = getRandomInt(300, 350);
         }
     }
     
-    yuptuneTimer--;
-    if (yuptuneTimer <= 0) {
+    if (probability(yuptuneChance)) {
         let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
         sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
-        yuptuneTimer = getRandomInt(300, 500);
     }
 
     if (msgContent.includes('69')) {
