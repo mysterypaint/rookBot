@@ -27,7 +27,7 @@ import {
     ],
   });
   
-  // Grab and define all environment variables from .env
+  // Grab and declare all environment variables from .env
   config();
   
   const TOKEN = process.env.DISCORD_TOKEN;
