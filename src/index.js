@@ -324,10 +324,17 @@ import {
 
     consolidatePixiv(capturedURLs, unmodifiedURLs, allMediaURLs, authorMetadata).then(value => {
       contentOut = "Artist: " + authorMetadata[1] + " (<https://www.pixiv.net/" + authorMetadata[0] + "/users/" + authorMetadata[2] + ">)" + "   |   Shared by: " + message.author.displayName + "\n<" + authorMetadata[3] + ">";
-    
+        
+        let outputMedia = [];
+        for (var i = 0; i < allMediaURLs.length; i++) {
+          if (i > 3)
+            break;
+          outputMedia.push(allMediaURLs[i]);
+        }
+
         message.channel.send({ //content: "<http://twitter.com/" + username + ">",
           content: contentOut,
-          files: allMediaURLs,
+          files: outputMedia,
         }).catch((err) => {
           console.log(err)
         });
