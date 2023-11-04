@@ -14,6 +14,8 @@ A Javascript Bot for personal usage, written using Node.js
      * Alternatively, you can execute ``npm run start:dev`` or ``node ./src/index.js`` from Terminal/CLI.
      * ``npm run start:dev`` and ``launch.bat`` will automatically re-launch the bot if the code is updated in realtime.
      * You can stop hosting by pressing ``Ctrl + C`` twice in the command line window.
+     * To keep it running forever, install Forever: ``npm install -g forever``
+          * After installation, use ``launch_auto_reboot_on_crash.bat`` to start the bot.
 
 ## Updating
 1. Ensure that you have a backup of your ``.env`` file.
