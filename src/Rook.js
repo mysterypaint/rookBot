@@ -548,7 +548,7 @@ class Rook {
       if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
         let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
 
-        rook.sayMifuShrimp(targChannel);
+        this.sayMifuShrimp(targChannel);
       }
     }
 
@@ -556,7 +556,7 @@ class Rook {
     if (Utility.probability(okeiChance)) {
       if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
         let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
-        rook.sayOkei(targChannel);
+        this.sayOkei(targChannel);
       }
     }
 
