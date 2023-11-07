@@ -70,6 +70,7 @@ var numVxTiktokSites = 0;
 var atLeastOneValidURL = false;
 
 var sitesToParse = [];
+var collectedTwitSites = [];
 
 var tweetMediaCache = [];
 var tweetUsernameCache = [];
@@ -586,10 +587,12 @@ function identifyURLs(inURL, regex, sitesToParse, websiteType) {
 
     switch (websiteType) {
       case Websites.Twitter:
+        collectedTwitSites.push(detectedSites[0]);
         atLeastOneValidURL = true;
         numTwitSites++;
         break;
       case Websites.VxTwitter:
+        collectedTwitSites.push(detectedSites[0]);
         atLeastOneValidURL = true;
         numVxTwitSites++;
         break;
@@ -922,6 +925,7 @@ client.on('messageCreate', async (message) => {
   numVxTiktokSites = 0;
 
   sitesToParse = [];
+  collectedTwitSites = [];
 
   if (scrapedURLs != -1) {
     for(const thisURL of scrapedURLs) {
@@ -951,9 +955,17 @@ client.on('messageCreate', async (message) => {
     const gatheredPostData = await parseAllSites(sitesToParse, numTwitSites, numVxTwitSites, numPixivSites, numPhixivSites);
 
       regex = /^(vx)?twitter|x.com/gm;
-      if (numTwitSites > 0)
-        postTweetURLs(message, await gatheredPostData);
-      else if (message.content.match(regex)) {
+      if (numTwitSites > 0) {
+        if (message.content.startsWith('vx ')) {
+          var outMsg = "";
+          for (var twitSite of collectedTwitSites) {
+            var rxTmp = /(vx)?twitter.com/i;
+            outMsg += twitSite.replace(rxTmp, 'vxtwitter.com') + "\n";
+          }
+          message.channel.send({content: outMsg});
+        } else
+          postTweetURLs(message, await gatheredPostData);
+      } else if (message.content.match(regex)) {
         // Handle memes
         if (message.content.includes(`vxtwitter.com`))
           message.channel.send(`Correct.`);
