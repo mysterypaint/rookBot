@@ -114,14 +114,14 @@ class Rook {
    * Sends the :mifushrimp: emote to the input Discord channel
    */
   sayMifuShrimp(channel) {
-    channel.send('<:mifushrimp:' + MIFU_SHRIMP_EMOTE_ID + '>');
+    channel.send('<:mifushrimp:' + this.MIFU_SHRIMP_EMOTE_ID + '>');
   }
 
   /**
    * Sends the :okei: emote to the input Discord channel
    */
   sayOkei(channel) {
-    channel.send('<:okei:' + OKEI_EMOTE_ID + '>');
+    channel.send('<:okei:' + this.OKEI_EMOTE_ID + '>');
   }
 
   /**
@@ -131,7 +131,7 @@ class Rook {
     const msgContent = message.content;
     if (msgContent.toLowerCase().includes('cute')) {
       message.reply({
-        content: 'cute... <:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>'
+        content: 'cute... <:mashiropray:' + this.MASHIRO_PRAY_EMOTE_ID + '>'
       });
     }
   }
@@ -545,7 +545,7 @@ class Rook {
 
     // Small chance to post :mifushrimp: emote to a channel; Send it to the channel that triggered the successful probability
     if (Utility.probability(mifuChance)) {
-      if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
+      if (this.ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
         let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
 
         this.sayMifuShrimp(targChannel);
@@ -554,7 +554,7 @@ class Rook {
 
     // Same as above, but for :okei:
     if (Utility.probability(okeiChance)) {
-      if (ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
+      if (this.ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
         let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
         this.sayOkei(targChannel);
       }
@@ -562,7 +562,7 @@ class Rook {
 
     // Same as above, but for Yuptune.gif. Posts it *specifically* in the #room3 channel
     if (Utility.probability(yuptuneChance)) {
-      let targChannel = message.client.channels.cache.get(ARK_CHANNEL_ID_ROOM3);
+      let targChannel = message.client.channels.cache.get(this.ARK_CHANNEL_ID_ROOM3);
       Utility.sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
     }
 
@@ -598,7 +598,7 @@ class Rook {
 
     // React to Discord messages that say "castle" or "castIe" (not case-sensitive) with :mashiropray:
     if (msgContent.toLowerCase().includes('castle') || msgContent.includes('castIe')) {
-      message.react('<:mashiropray:' + MASHIRO_PRAY_EMOTE_ID + '>');
+      message.react('<:mashiropray:' + this.MASHIRO_PRAY_EMOTE_ID + '>');
     }
 
     // Replies "ayy lmao" to anyone who says "ayy"
