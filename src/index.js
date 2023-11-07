@@ -136,7 +136,7 @@ function eatAllEmotes(inStr) {
  * Removes all Discord-formatted pings from the input string and returns the modified string
  */
 function eatAllPings(inStr) {
-  let reg = /<@\&\d+>/gm;
+  let reg = /<@(\&)?\d+>/gm;
   return inStr.replace(reg, '').trim();
 }
 
