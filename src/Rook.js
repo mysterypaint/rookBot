@@ -194,23 +194,39 @@ class Rook {
 		}
 
 		try {
-			await message.channel.send({
-				content: msgContent,
-				files: await allMediaURLs,
-			}).catch((err) => {
-				switch (err.code) {
-					case 50035:
-						msgContent = "**Too many images to combine! Only posting the first 10. (Max: 10)**\n\n" + msgContent;
-						var firstTenAttachments = [];
-						for (var i = 0; i < 10; i++)
-							firstTenAttachments.push(allMediaURLs[i]);
-						message.channel.send({
-							content: msgContent,
-							files: firstTenAttachments,
-						});
-						break;
+			if (allMediaURLs.length <= 0) {
+				let vxOriginURLs = [];
+				for (var url of allOriginURLs)
+					vxOriginURLs.push(url.replace('twitter.com', 'vxtwitter.com'));
+
+				msgContent = "";
+				for (var i = 0; i < vxOriginURLs.length; i++) {
+					msgContent += vxOriginURLs[i];
+					if (i < vxOriginURLs.length - 1)
+						msgContent += " | ";
 				}
-			});
+				await message.channel.send({
+					content: msgContent,
+				}).catch((err) => {console.log(err);});
+			} else {
+				await message.channel.send({
+					content: msgContent,
+					files: await allMediaURLs,
+				}).catch((err) => {
+					switch (err.code) {
+						case 50035:
+							msgContent = "**Too many images to combine! Only posting the first 10. (Max: 10)**\n\n" + msgContent;
+							var firstTenAttachments = [];
+							for (var i = 0; i < 10; i++)
+								firstTenAttachments.push(allMediaURLs[i]);
+							message.channel.send({
+								content: msgContent,
+								files: firstTenAttachments,
+							});
+							break;
+					}
+				});
+			}
 		} catch (error) {
 			message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => {
 				console.log(err)
