@@ -7,11 +7,11 @@ const DelMsgsCommand = new SlashCommandBuilder()
         option.setName('count')
         .setDescription('Number of messages to delete')
         .setMinValue(0)
-        .setMaxValue(3)
+        .setMaxValue(100)
         .setRequired(true))
-    .addIntegerOption(sub =>
-        sub.setName("userid")
-        .setDescription('The specific user to delete messages from')
-        .setMinValue(0));
+    .addMentionableOption(sub =>
+        sub.setName("user")
+        .setDescription('The specific user to delete messages from'));
+        
 
 export default DelMsgsCommand.toJSON();

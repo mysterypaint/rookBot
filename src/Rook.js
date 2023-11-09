@@ -12,12 +12,15 @@ const yuptuneChance = 0.00001; // Approx ~1/700 (0.014) chance of triggering yup
 class Rook {
 	constructor(process) {
 		this._castIeID = process.env.CASTIE_ID;
+		this._ark_whitelisted_moderator_ids = process.env.ARK_WHITELISTED_MODERATOR_IDS.split(", ");
+		
+		this._ark_guild_id = process.env.ARK_GUILD_ID;
 		this._ark_channel_id_bots = process.env.ARK_CHANNEL_ID_BOTS;
 		this._ark_channel_id_da_chat = process.env.ARK_CHANNEL_ID_DA_CHAT;
 		this._ark_channel_id_hotchip = process.env.ARK_CHANNEL_ID_HOTCHIP;
 		this._ark_channel_id_room3 = process.env.ARK_CHANNEL_ID_ROOM3;
 		this._ark_whitelisted_channel_ids = process.env.ARK_WHITELISTED_CHANNEL_IDS.split(", ");
-		this._personal_channel_id_general = process.env.PERSONAL_CHANNEL_ID_GENERAL;
+		this._personal_guild_id = process.env.PERSONAL_GUILD_ID;
 		this._personal_channel_id_n = process.env.PERSONAL_CHANNEL_ID_N;
 		this._mashiro_pray_emote_id = process.env.MASHIRO_PRAY_EMOTE_ID;
 		this._mifu_shrimp_emote_id = process.env.MIFU_SHRIMP_EMOTE_ID;
@@ -558,41 +561,42 @@ class Rook {
 					}
 					break;
 				case 'del':
-					/// Handle messages *specifically* sent by user castIe
-					if (message.author.id == this._castIeID) {
-						let numMsgs = interaction.options.get('count').value;
-						let userID;
-						try {
-							userID = interaction.options.get('userid').value;
-						} catch(err) {
-							userID = undefined;
-						}
+					/// Handle messages *specifically* sent by Ark mods
+					if (interaction.guild.id == this._ark_guild_id || interaction.guild.id == this._personal_guild_id) {
+						if (this._ark_whitelisted_moderator_ids.includes(interaction.user.id)) {
+							let numMsgs = interaction.options.get('count').value;
+							let userID;
+							try {
+								userID = interaction.options.get('user').value;
+							} catch(err) {
+								userID = undefined;
+							}
 
-						interaction.reply("Working...");
-						//client.channels.fetch(interaction.mention_channels.first().id).then(channel => channel.send(input))
-
-						// Iterate through the [numChannelMsg] most recent messages sent in the channel from everyone
-						let channel = interaction.channel;
-						channel.fetch({limit: numMsgs}).then((collected) => {
-							console.log(collected);
-							/*
-							collected.forEach(msg => {
-								if (userID != undefined) {
-									if (msg.content.author.id == userID)
-										msg.delete(); // We specified a user: Ensure that the bot ONLY deletes that user's messages
-								} else
-									msg.delete(); // Delete every message, regardless who it was from
+							interaction.reply("Working...").then(msg => {
+								setTimeout(() => msg.delete(), 10)
 							})
-				
-							//const userMsgs = collected.filter((msg) => msg.author.bot)
-							//message.channel.bulkDelete(userMsgs)
-							*/	
-						})
-						break;
-						interaction.delete();
+							.catch(err => {console.log("Could not delete messages: " + err)});
+							
+							// Iterate through the [numChannelMsg] most recent messages sent in the channel from everyone
+							const fetchedChannel = interaction.guild.channels.cache.get(interaction.channel.id);
+
+							/// TODO: More reliable deleting to account for potential lag 
+							fetchedChannel.messages.fetch({limit: numMsgs}).then((collected) => {
+								collected.forEach(msg => {
+									if (userID != undefined) {
+										if (msg.author.id == userID)
+											msg.delete(); // We specified a user: Ensure that the bot ONLY deletes that user's messages
+									} else
+										msg.delete(); // Delete every message, regardless who it was from
+								})
+							})
+						} else {
+							interaction.reply("Forbidden.");
+						}
 					} else {
 						interaction.reply("Forbidden.");
 					}
+					break;
 			}
 		}
 	}
@@ -609,7 +613,7 @@ class Rook {
 
 		// Small chance to post :mifushrimp: emote to a channel; Send it to the channel that triggered the successful probability
 		if (Utility.probability(mifuChance)) {
-			if ( this._ark_whitelisted_channel_ids.includes(message.channel.id)) {
+			if (this._ark_whitelisted_channel_ids.includes(message.channel.id)) {
 				let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
 
 				this.sayMifuShrimp(targChannel);
@@ -618,7 +622,7 @@ class Rook {
 
 		// Same as above, but for :okei:
 		if (Utility.probability(okeiChance)) {
-			if ( this._ark_whitelisted_channel_ids.includes(message.channel.id)) {
+			if (this._ark_whitelisted_channel_ids.includes(message.channel.id)) {
 				let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
 				this.sayOkei(targChannel);
 			}
