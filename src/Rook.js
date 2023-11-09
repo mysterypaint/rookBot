@@ -778,7 +778,7 @@ class Rook {
 
 			const gatheredPostData = await this.parseAllSites(SiteScraper.sitesToParse, this._numTwitSites, this._numVxTwitSites, this._numFixVxTwitSites, this._numPixivSites, this._numPhixivSites);
 
-			regex = /((vx)?twitter|^x| x)\.com/gm;
+			regex = /((vx)?twitter|^x| x)\.com($| )/gm;
 			if (this._numTwitSites > 0 || (this._numVxTwitSites > 0 && (this._numPixivSites > 0 || this._numTiktokSites > 0))) {
 				if (message.content.startsWith('vx ')) {
 					var outMsg = "";
