@@ -11,17 +11,17 @@ const yuptuneChance = 0.00001; // Approx ~1/700 (0.014) chance of triggering yup
 
 class Rook {
 	constructor(process) {
-		const CASTIE_ID = process.env.CASTIE_ID;
-		const ARK_CHANNEL_ID_BOTS = process.env.ARK_CHANNEL_ID_BOTS;
-		const ARK_CHANNEL_ID_DA_CHAT = process.env.ARK_CHANNEL_ID_DA_CHAT;
-		const ARK_CHANNEL_ID_HOTCHIP = process.env.ARK_CHANNEL_ID_HOTCHIP;
-		const ARK_CHANNEL_ID_ROOM3 = process.env.ARK_CHANNEL_ID_ROOM3;
-		const ARK_WHITELISTED_CHANNEL_IDS = process.env.ARK_WHITELISTED_CHANNEL_IDS.split(", ");
-		const PERSONAL_CHANNEL_ID_GENERAL = process.env.PERSONAL_CHANNEL_ID_GENERAL;
-		const PERSONAL_CHANNEL_ID_N = process.env.PERSONAL_CHANNEL_ID_N;
-		const MASHIRO_PRAY_EMOTE_ID = process.env.MASHIRO_PRAY_EMOTE_ID;
-		const MIFU_SHRIMP_EMOTE_ID = process.env.MIFU_SHRIMP_EMOTE_ID;
-		const OKEI_EMOTE_ID = process.env.OKEI_EMOTE_ID;
+		this._castIeID = process.env.CASTIE_ID;
+		this._ark_channel_id_bots = process.env.ARK_CHANNEL_ID_BOTS;
+		this._ark_channel_id_da_chat = process.env.ARK_CHANNEL_ID_DA_CHAT;
+		this._ark_channel_id_hotchip = process.env.ARK_CHANNEL_ID_HOTCHIP;
+		this._ark_channel_id_room3 = process.env.ARK_CHANNEL_ID_ROOM3;
+		this._ark_whitelisted_channel_ids = process.env.ARK_WHITELISTED_CHANNEL_IDS.split(", ");
+		this._personal_channel_id_general = process.env.PERSONAL_CHANNEL_ID_GENERAL;
+		this._personal_channel_id_n = process.env.PERSONAL_CHANNEL_ID_N;
+		this._mashiro_pray_emote_id = process.env.MASHIRO_PRAY_EMOTE_ID;
+		this._mifu_shrimp_emote_id = process.env.MIFU_SHRIMP_EMOTE_ID;
+		this._okei_emote_id = process.env.OKEI_EMOTE_ID;
 
 		// Declare vars
 		this._ayylmaoCooldownTimer = 0;
@@ -29,6 +29,7 @@ class Rook {
 		this._sayoriCooldownTimer = 0;
 		this._numTwitSites = 0;
 		this._numVxTwitSites = 0;
+		this._numFixVxTwitSites = 0;
 		this._numPixivSites = 0;
 		this._numPhixivSites = 0;
 		this._numTiktokSites = 0;
@@ -45,6 +46,7 @@ class Rook {
 	resetSiteCount() {
 		this._numTwitSites = 0;
 		this._numVxTwitSites = 0;
+		this._numFixVxTwitSites = 0;
 		this._numPixivSites = 0;
 		this._numPhixivSites = 0;
 		this._numTiktokSites = 0;
@@ -114,14 +116,22 @@ class Rook {
 	 * Sends the :mifushrimp: emote to the input Discord channel
 	 */
 	sayMifuShrimp(channel) {
-		channel.send('<:mifushrimp:' + this.MIFU_SHRIMP_EMOTE_ID + '>');
+		try {
+			channel.send('<:mifushrimp:' + this._mifu_shrimp_emote_id + '>').catch(err => {console.log(err)});;
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	/**
 	 * Sends the :okei: emote to the input Discord channel
 	 */
 	sayOkei(channel) {
-		channel.send('<:okei:' + this.OKEI_EMOTE_ID + '>');
+		try {
+			channel.send('<:okei:' + this._okei_emote_id + '>').catch(err => {console.log(err)});;
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	/**
@@ -130,9 +140,13 @@ class Rook {
 	sayCute(message) {
 		const msgContent = message.content;
 		if (msgContent.toLowerCase().includes('cute')) {
-			message.reply({
-				content: 'cute... <:mashiropray:' + this.MASHIRO_PRAY_EMOTE_ID + '>'
-			});
+			try {
+				message.reply({
+					content: 'cute... <:mashiropray:' + this._mashiro_pray_emote_id + '>'
+				}).catch(err => {console.log(err)});
+			} catch (error) {
+				console.log(error);
+			}
 		}
 	}
 
@@ -342,6 +356,11 @@ class Rook {
 					SiteScraper.atLeastOneValidURL.changeVal = true;
 					this._numVxTwitSites++;
 					break;
+				case SiteScraper.Websites.FixVX:
+					SiteScraper.collectedTwitSites.push(detectedSites[0]);
+					SiteScraper.atLeastOneValidURL.changeVal = true;
+					this._numFixVxTwitSites++;
+					break;
 				case SiteScraper.Websites.Pixiv:
 					SiteScraper.atLeastOneValidURL.changeVal = true;
 					this._numPixivSites++;
@@ -362,7 +381,7 @@ class Rook {
 		}
 	}
 
-	async parseAllSites(sitesToParse, numTwitSites, numVxTwitSites, numPixivSites, numPhixivSites) {
+	async parseAllSites(sitesToParse, numTwitSites, numVxTwitSites, numFixVxTwitSites, numPixivSites, numPhixivSites) {
 		this._tweetMediaCache = [];
 		this._tweetUsernameCache = [];
 		this._tweetOriginURLCache = [];
@@ -378,10 +397,11 @@ class Rook {
 				case SiteScraper.Websites.VxTwitter:
 					// Only handle Twitter URLs if there is at least one non-VX Tweet that was scraped, or if this is a URL batch
 					if (this._numTwitSites > 0 || (this.numVxTwitSites > 0 && (this._numPixivSites > 0 || this._numTiktokSites > 0))) {
+						thisURL = thisURL.replaceAll('fixvx', 'x');
 						thisURL = thisURL.replaceAll('vxtwitter', 'x');
 						thisURL = thisURL.replaceAll('twitter', 'x');
 						thisURL = thisURL.replaceAll('x', 'vxtwitter');
-
+						
 						// Promise a tweet cache, and then store the tweet's media in our this.tweetMediaCache[]
 						const res = await SiteScraper.fetchTweetCacheFromURL(thisURL);
 						for (const mediaURL of res[0])
@@ -537,6 +557,42 @@ class Rook {
 						})
 					}
 					break;
+				case 'del':
+					/// Handle messages *specifically* sent by user castIe
+					if (message.author.id == this._castIeID) {
+						let numMsgs = interaction.options.get('count').value;
+						let userID;
+						try {
+							userID = interaction.options.get('userid').value;
+						} catch(err) {
+							userID = undefined;
+						}
+
+						interaction.reply("Working...");
+						//client.channels.fetch(interaction.mention_channels.first().id).then(channel => channel.send(input))
+
+						// Iterate through the [numChannelMsg] most recent messages sent in the channel from everyone
+						let channel = interaction.channel;
+						channel.fetch({limit: numMsgs}).then((collected) => {
+							console.log(collected);
+							/*
+							collected.forEach(msg => {
+								if (userID != undefined) {
+									if (msg.content.author.id == userID)
+										msg.delete(); // We specified a user: Ensure that the bot ONLY deletes that user's messages
+								} else
+									msg.delete(); // Delete every message, regardless who it was from
+							})
+				
+							//const userMsgs = collected.filter((msg) => msg.author.bot)
+							//message.channel.bulkDelete(userMsgs)
+							*/	
+						})
+						break;
+						interaction.delete();
+					} else {
+						interaction.reply("Forbidden.");
+					}
 			}
 		}
 	}
@@ -553,7 +609,7 @@ class Rook {
 
 		// Small chance to post :mifushrimp: emote to a channel; Send it to the channel that triggered the successful probability
 		if (Utility.probability(mifuChance)) {
-			if (this.ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
+			if ( this._ark_whitelisted_channel_ids.includes(message.channel.id)) {
 				let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
 
 				this.sayMifuShrimp(targChannel);
@@ -562,7 +618,7 @@ class Rook {
 
 		// Same as above, but for :okei:
 		if (Utility.probability(okeiChance)) {
-			if (this.ARK_WHITELISTED_CHANNEL_IDS.includes(message.channel.id)) {
+			if ( this._ark_whitelisted_channel_ids.includes(message.channel.id)) {
 				let targChannel = message.channel; //.channels.cache.get(randomWhitelistedChannel);
 				this.sayOkei(targChannel);
 			}
@@ -570,7 +626,7 @@ class Rook {
 
 		// Same as above, but for Yuptune.gif. Posts it *specifically* in the #room3 channel
 		if (Utility.probability(yuptuneChance)) {
-			let targChannel = message.client.channels.cache.get(this.ARK_CHANNEL_ID_ROOM3);
+			let targChannel = message.client.channels.cache.get(this. this._ark_channel_id_room3);
 			Utility.sendLocalFile(targChannel, 'src/img/memes/Yuptune.gif', 'Yuptune.gif', 'Yuptune');
 		}
 
@@ -606,7 +662,11 @@ class Rook {
 
 		// React to Discord messages that say "castle" or "castIe" (not case-sensitive) with :mashiropray:
 		if (msgContent.toLowerCase().includes('castle') || msgContent.includes('castIe')) {
-			message.react('<:mashiropray:' + this.MASHIRO_PRAY_EMOTE_ID + '>');
+			try {
+				message.react('<:mashiropray:' + this._mashiro_pray_emote_id + '>').catch(err => {console.log(err)});
+			} catch (error) {
+				console.log(error);
+			}
 		}
 
 		// Replies "ayy lmao" to anyone who says "ayy"
@@ -645,7 +705,7 @@ class Rook {
 			this._sayoriCooldownTimer--;
 
 		/// Handle messages *specifically* sent by user castIe
-		if (message.author.id == this.CASTIE_ID) {
+		if (message.author.id == this._castIeID) {
 			let guildID = message.guild.id;
 			let channelID = message.channel.id;
 			let allowed = (element) => element == channelID;
@@ -676,6 +736,9 @@ class Rook {
 				// Detect and cache all vxtwitter.com URLs to tweetsToParse[]
 				this.identifyURLs(thisURL, /^(http?s:\/\/)?(vxtwitter)\.com\/[a-z_A-Z\d]+\/status\/\d+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.VxTwitter);
 
+				// Detect and cache all fixvx.com URLs to tweetsToParse[]
+				this.identifyURLs(thisURL, /^(http?s:\/\/)?(fixvx)\.com\/[a-z_A-Z\d]+\/status\/\d+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.FixVX);
+
 				// Detect and cache all pixiv.net art URLs to SiteScraper.sitesToParse[]
 				this.identifyURLs(thisURL, /^(https?:\/\/)?(www\.)?pixiv.net\/\w\w\/artworks\/\d.+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Pixiv);
 
@@ -693,9 +756,9 @@ class Rook {
 
 			console.log("scrapedURLs: " + scrapedURLs);
 
-			const gatheredPostData = await this.parseAllSites(SiteScraper.sitesToParse, this._numTwitSites, this._numVxTwitSites, this._numPixivSites, this._numPhixivSites);
+			const gatheredPostData = await this.parseAllSites(SiteScraper.sitesToParse, this._numTwitSites, this._numVxTwitSites, this._numFixVxTwitSites, this._numPixivSites, this._numPhixivSites);
 
-			regex = /^(vx)?twitter|x.com/gm;
+			regex = /^(vx)?twitter|x/gm;
 			if (this._numTwitSites > 0 || (this._numVxTwitSites > 0 && (this._numPixivSites > 0 || this._numTiktokSites > 0))) {
 				if (message.content.startsWith('vx ')) {
 					var outMsg = "";
@@ -708,13 +771,14 @@ class Rook {
 					});
 				} else
 					this.postTweetURLs(message, await gatheredPostData);
-			} else if (message.content.match(regex)) {
+			} else if (message.content.match(regex) && !message.content.includes(`fixvx.com`)) {
 				// Handle memes
 				if (message.content.includes(`vxtwitter.com`))
 					message.channel.send(`Correct.`);
 				else
 					message.channel.send(`vxtwitter.com`);
-			}
+			} else if (message.content.includes('fixvx.com') && this._numFixVxTwitSites <= 0)
+				message.channel.send(`Correct.`);
 
 			regex = /^p(h)?ixiv.net/gm;
 			if (this._numPixivSites > 0 || (this._numPhixivSites > 0 && (this._numTwitSites > 0 || this._numTiktokSites > 0)))

@@ -45,7 +45,6 @@ class Utility {
 
 		return url.protocol === "http:" || url.protocol === "https:";
 	}
-
 }
 
 export default Utility;

@@ -13,6 +13,7 @@ import {
 	REST
 } from '@discordjs/rest';
 import SayoriCommand from './commands/Sayori.js';
+import DelMsgsCommand from './commands/DelMsgs.js';
 import DiceRollCommand from './commands/DiceRoll.js';
 import DiceRollListCommand from './commands/DiceRollList.js';
 import YuptuneCommand from './commands/Yuptune.js';
@@ -65,6 +66,7 @@ async function main() {
 	const commands = [
 		SayoriCommand,
 		YuptuneCommand,
+		DelMsgsCommand,
 		DiceRollCommand,
 		DiceRollListCommand,
 	];

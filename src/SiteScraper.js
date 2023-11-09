@@ -6,7 +6,7 @@ class SiteScraper {
 	 */
 	static async fetchTweetData(twitURL) {
 		try {
-			twitURL = twitURL.replace(/(https?:\/\/)?(www\.)?((vx)?twitter|x).com/i, "https://api.vxtwitter.com");
+			twitURL = twitURL.replace(/(https?:\/\/)?(www\.)?((vx)?twitter|x|fixvx).com/i, "https://api.vxtwitter.com");
 			const response = await fetch(twitURL);
 
 			if (!response.ok) {
@@ -118,10 +118,11 @@ SiteScraper.atLeastOneValidURL = {
 SiteScraper.Websites = {
 	Twitter: 0,
 	VxTwitter: 1,
-	Pixiv: 2,
-	Phixiv: 3,
-	Tiktok: 4,
-	VxTiktok: 5,
+	FixVX: 2,
+	Pixiv: 3,
+	Phixiv: 4,
+	Tiktok: 5,
+	VxTiktok: 6,
 }
 
 export default SiteScraper;
