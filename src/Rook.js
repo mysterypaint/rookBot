@@ -268,7 +268,7 @@ class Rook {
 			}
 
 			// Claim who posted the message
-			var msgContent = await "Artist: " + thisPixAuthorName + " (" + SiteScraper.wrapURL(thisAuthorURL) + ")" + "   |   Shared by: " + message.member.user.tag + "   |   " + SiteScraper.wrapURL(thisArtURL);
+			var msgContent = await "Artist: [**" + thisPixAuthorName + "**](" + SiteScraper.wrapURL(thisAuthorURL) + ")" + "   |   Shared by: " + message.member.user.tag + "   |   " + SiteScraper.wrapURL(thisArtURL);
 			try {
 				await message.channel.send({
 					content: msgContent,
