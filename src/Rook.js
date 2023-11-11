@@ -308,11 +308,25 @@ class Rook {
 	async fetchPixivData(inURL) {
 
 		try {
-			let regex = await/p[h]?ixiv\.net\/(\w\w)\/artworks\/(\d+)/ig;
+			let regex = await/p[h]?ixiv\.net\/(\w\w\/)?artworks\/(\d+)/ig;
 			let regMatches = await regex.exec(inURL); //inURL.matchAll(regex);
-			let lang = await regMatches[1];
 			let artID = await regMatches[2];
-			let pixivURL = await `https://phixiv.net/api/info?id=` + artID + `&language=` + lang;
+			let i = 1;
+			if (await artID == undefined)
+				while (artID == undefined) {
+					artID = await regMatches[i];
+					i++;
+
+					if (i > 100)
+						break;
+				}
+				
+			let pixivURL = await `https://phixiv.net/api/info?id=` + artID;
+			if (i > 100) {
+				console.log(`Invalid URL: ` + pixivURL);
+				return -3;
+			}
+
 			let response = await fetch(await pixivURL);
 
 			if (!response.ok) {
@@ -760,10 +774,10 @@ class Rook {
 				this.identifyURLs(thisURL, /^(http?s:\/\/)?(fixvx)\.com\/[a-z_A-Z\d]+\/status\/\d+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.FixVX);
 
 				// Detect and cache all pixiv.net art URLs to SiteScraper.sitesToParse[]
-				this.identifyURLs(thisURL, /^(https?:\/\/)?(www\.)?pixiv.net\/\w\w\/artworks\/\d.+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Pixiv);
+				this.identifyURLs(thisURL, /^(https?:\/\/)?(www\.)?pixiv.net\/(\w\w\/)?artworks\/\d.+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Pixiv);
 
 				// Detect and cache all phixiv.net art URLs to SiteScraper.sitesToParse[]
-				this.identifyURLs(thisURL, /^(https?:\/\/)?(www\.)?phixiv.net\/\w\w\/artworks\/\d.+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Phixiv);
+				this.identifyURLs(thisURL, /^(https?:\/\/)?(www\.)?phixiv.net\/(\w\w\/)?artworks\/\d.+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Phixiv);
 
 				// Detect and cache all tiktok.com URLs to SiteScraper.sitesToParse[]
 				this.identifyURLs(thisURL, /^(https?:\/\/)?(www\.)?tiktok.com\/(t\/[a-zA-Z\d]+|@[a-zA-Z_\d]+\/video\/\d+)/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Tiktok);
