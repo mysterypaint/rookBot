@@ -12,15 +12,15 @@ import {
 import {
 	REST
 } from '@discordjs/rest';
-import SayoriCommand from './commands/Sayori.js';
-import DelMsgsCommand from './commands/DelMsgs.js';
-import DiceRollCommand from './commands/DiceRoll.js';
-import DiceRollListCommand from './commands/DiceRollList.js';
-import YuptuneCommand from './commands/Yuptune.js';
+import SayoriCommand from './commands/sayori.js';
+import DelMsgsCommand from './commands/delMsgs.js';
+import DiceRollCommand from './commands/diceRoll.js';
+import DiceRollListCommand from './commands/diceRollList.js';
+import YuptuneCommand from './commands/yuptune.js';
 import fetch from 'node-fetch';
-import SiteScraper from './SiteScraper.js';
-import Utility from './Utility.js';
-import Rook from './Rook.js';
+import SiteScraper from './siteScraper.js';
+import Utility from './utility.js';
+import Rook from './rook.js';
 
 // Create the client
 const client = new Client({
@@ -40,7 +40,7 @@ const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 
-const rook = new Rook(process);
+const rook = new Rook(process, client);
 
 const rest = new REST({
 	version: '10'

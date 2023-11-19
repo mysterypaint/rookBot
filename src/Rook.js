@@ -1,5 +1,5 @@
-import Utility from './Utility.js';
-import SiteScraper from './SiteScraper.js';
+import Utility from './utility.js';
+import SiteScraper from './siteScraper.js';
 import {
 	EmbedBuilder,
 } from 'discord.js';
@@ -632,11 +632,13 @@ class Rook {
 	}
 
 	async messageCreateEvent(message) {
+		console.log(message);
+
 		if (message.author.bot)
 			return;
 
 		// Log the message to the console
-		console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
+		//console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
 
 		var msgContent = message.content;
 		let regex;
