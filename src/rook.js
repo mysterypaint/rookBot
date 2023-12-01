@@ -765,7 +765,14 @@ class Rook {
 		SiteScraper.collectedTwitSites = [];
 
 		if (scrapedURLs != -1) {
-			for (const thisURL of scrapedURLs) {
+			for (var i = 0; i < scrapedURLs.length; i+=2) {
+				var thisURL = scrapedURLs[i];
+				var isWrapped = scrapedURLs[i + 1];
+				
+				// Do not do anything with sites that are encapsulated with < and >
+				if (isWrapped)
+					continue;
+				
 				// Detect and cache all twitter.com/x.com URLs to SiteScraper.sitesToParse[]
 				this.identifyURLs(thisURL, /^(http?s:\/\/)?(twitter|x)\.com\/[a-z_A-Z\d]+\/status\/\d+/gm, SiteScraper.sitesToParse, SiteScraper.Websites.Twitter);
 

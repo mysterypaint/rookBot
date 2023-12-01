@@ -59,11 +59,15 @@ class SiteScraper {
 		inStr = inStr.replaceAll(' ', '\n');
 		inStr = inStr.replaceAll('https://', '');
 		inStr = inStr.replaceAll('http://', '');
-		regex = /(https?:\/\/(www\.)?)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
+		regex = /<?(https?:\/\/(www\.)?)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*>?)/gm;
 
 		try {
 			inStr.match(regex).forEach((element) => {
-				collectedURLs.push("https://" + element);
+				var isWrapped = element.startsWith('<') && element.endsWith('>');
+				var thisURL = element;
+				if (isWrapped)
+					thisURL = thisURL.substring(1, thisURL.length - 1);
+				collectedURLs.push("https://" + thisURL, isWrapped);
 			});
 		} catch (err) {
 			// No URLs were found; Return -1
