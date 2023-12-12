@@ -188,49 +188,63 @@ class Rook {
 		const allUsernames = await gatheredPostData[0][1];
 		const allOriginURLs = await gatheredPostData[0][2];
 
-		// Claim who posted the message if we're also posting Pixiv or Tiktok URLs, because the user's message is about to get deleted
-		if (this._numTiktokSites > 0 || this._numPixivSites > 0 || this._numVxTiktokSites > 0 || this._numPhixivSites > 0) {
-			msgContent = message.member.user.tag + " posted: " + SiteScraper.wrapAllURLs(allOriginURLs);
-		}
-
-		try {
-			if (allMediaURLs.length <= 0) {
-				let vxOriginURLs = [];
-				for (var url of allOriginURLs)
-					vxOriginURLs.push(url.replace('twitter.com', 'vxtwitter.com'));
-
-				msgContent = "";
-				for (var i = 0; i < vxOriginURLs.length; i++) {
-					msgContent += vxOriginURLs[i];
-					if (i < vxOriginURLs.length - 1)
-						msgContent += " | ";
+		if (allUsernames == "[[ERROR]]") {
+			var errCode = allOriginURLs;
+			var errURL = allMediaURLs;
+			msgContent = "Invalid tweet! Maybe it was it deleted? (Error code: " + errCode + ")";
+			await message.channel.send({
+				content: msgContent,
+			}).catch((err) => {
+				switch (err.code) {
+					default:
+						break;
 				}
-				await message.channel.send({
-					content: msgContent,
-				}).catch((err) => {console.log(err);});
-			} else {
-				await message.channel.send({
-					content: msgContent,
-					files: await allMediaURLs,
-				}).catch((err) => {
-					switch (err.code) {
-						case 50035:
-							msgContent = "**Too many images to combine! Only posting the first 10. (Max: 10)**\n\n" + msgContent;
-							var firstTenAttachments = [];
-							for (var i = 0; i < 10; i++)
-								firstTenAttachments.push(allMediaURLs[i]);
-							message.channel.send({
-								content: msgContent,
-								files: firstTenAttachments,
-							});
-							break;
+			});
+		} else {
+			// Claim who posted the message if we're also posting Pixiv or Tiktok URLs, because the user's message is about to get deleted
+			if (this._numTiktokSites > 0 || this._numPixivSites > 0 || this._numVxTiktokSites > 0 || this._numPhixivSites > 0) {
+				msgContent = message.member.user.tag + " posted: " + SiteScraper.wrapAllURLs(allOriginURLs);
+			}
+
+			try {
+				if (allMediaURLs.length <= 0) {
+					let vxOriginURLs = [];
+					for (var url of allOriginURLs)
+						vxOriginURLs.push(url.replace('twitter.com', 'vxtwitter.com'));
+
+					msgContent = "";
+					for (var i = 0; i < vxOriginURLs.length; i++) {
+						msgContent += vxOriginURLs[i];
+						if (i < vxOriginURLs.length - 1)
+							msgContent += " | ";
 					}
+					await message.channel.send({
+						content: msgContent,
+					}).catch((err) => {console.log(err);});
+				} else {
+					await message.channel.send({
+						content: msgContent,
+						files: await allMediaURLs,
+					}).catch((err) => {
+						switch (err.code) {
+							case 50035:
+								msgContent = "**Too many images to combine! Only posting the first 10. (Max: 10)**\n\n" + msgContent;
+								var firstTenAttachments = [];
+								for (var i = 0; i < 10; i++)
+									firstTenAttachments.push(allMediaURLs[i]);
+								message.channel.send({
+									content: msgContent,
+									files: firstTenAttachments,
+								});
+								break;
+						}
+					});
+				}
+			} catch (error) {
+				message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => {
+					console.log(err)
 				});
 			}
-		} catch (error) {
-			message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => {
-				console.log(err)
-			});
 		}
 	}
 
@@ -437,11 +451,20 @@ class Rook {
 						
 						// Promise a tweet cache, and then store the tweet's media in our this.tweetMediaCache[]
 						const res = await SiteScraper.fetchTweetCacheFromURL(thisURL);
-						for (const mediaURL of res[0])
-							this._tweetMediaCache.push(mediaURL);
 
-						this._tweetUsernameCache.push(res[1]); // tweet username
-						this._tweetOriginURLCache.push(res[2]); // tweet origin URL
+						if (res < 0) {
+							console.log("Invalid tweet detected: " + thisURL);
+							this._tweetMediaCache.push(thisURL);
+							this._tweetUsernameCache.push("[[ERROR]]");
+							this._tweetOriginURLCache.push(res);
+						}
+						else {
+							for (const mediaURL of res[0])
+								this._tweetMediaCache.push(mediaURL);
+
+							this._tweetUsernameCache.push(res[1]); // tweet username
+							this._tweetOriginURLCache.push(res[2]); // tweet origin URL
+						}
 					}
 					break;
 				case SiteScraper.Websites.Pixiv:

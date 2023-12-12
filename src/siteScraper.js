@@ -40,7 +40,10 @@ class SiteScraper {
 			let username = await "@" + tweetObj.user_screen_name;
 			let url = await tweetObj.tweetURL;
 
-			return [mediaURLs, username, url];
+			if (jString < 0)
+				return jString;
+			else
+				return [mediaURLs, username, url];
 		} catch (error) {
 			/*
 			message.channel.send("Could not resolve to host :sob: :broken_heart:").catch((err) => {
