@@ -190,7 +190,7 @@ class Rook {
 
 		if (allUsernames == "[[ERROR]]") {
 			var errCode = allOriginURLs;
-			var errURL = allMediaURLs;
+			var errURL = allMediaURLs[0];
 
 			errURL = errURL.replace("api.vxtwitter", "vxtwitter");
 			
