@@ -191,7 +191,10 @@ class Rook {
 		if (allUsernames == "[[ERROR]]") {
 			var errCode = allOriginURLs;
 			var errURL = allMediaURLs;
-			msgContent = "Invalid tweet! Maybe it was it deleted? (Error code: " + errCode + ")";
+
+			errURL = errURL.replace("api.vxtwitter", "vxtwitter");
+			
+			msgContent = "VXTwitter API failed! (Err Code: " + errCode + ").\nAttempting to post it myself: " + errURL;
 			await message.channel.send({
 				content: msgContent,
 			}).catch((err) => {
