@@ -22,6 +22,13 @@ import SiteScraper from './siteScraper.js';
 import Utility from './utility.js';
 import Rook from './rook.js';
 
+// Debug Parameters
+const debugP = {};
+debugP.disTwit = true;
+debugP.logScrapedURLs = false;
+
+
+
 // Create the client
 const client = new Client({
 	intents: [
@@ -40,7 +47,7 @@ const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 
-const rook = new Rook(process, client);
+const rook = new Rook(process, client, debugP);
 
 const rest = new REST({
 	version: '10'

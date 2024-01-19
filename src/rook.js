@@ -10,7 +10,9 @@ const okeiChance = 0.0001; // 0.1% chance of triggering okei
 const yuptuneChance = 0.00001; // Approx ~1/700 (0.014) chance of triggering yuptune
 
 class Rook {
-	constructor(process) {
+	constructor(process, client, debugP) {
+		this._debugP = debugP;
+		
 		this._castIeID = process.env.CASTIE_ID;
 		this._ark_whitelisted_moderator_ids = process.env.ARK_WHITELISTED_MODERATOR_IDS.split(", ");
 		
@@ -397,14 +399,18 @@ class Rook {
 
 			switch (websiteType) {
 				case SiteScraper.Websites.Twitter:
-					SiteScraper.collectedTwitSites.push(detectedSites[0]);
-					SiteScraper.atLeastOneValidURL.changeVal = true;
-					this._numTwitSites++;
+					if (!this._debugP.disTwit) {
+						SiteScraper.collectedTwitSites.push(detectedSites[0]);
+						SiteScraper.atLeastOneValidURL.changeVal = true;
+						this._numTwitSites++;
+					}
 					break;
 				case SiteScraper.Websites.VxTwitter:
-					SiteScraper.collectedTwitSites.push(detectedSites[0]);
-					SiteScraper.atLeastOneValidURL.changeVal = true;
-					this._numVxTwitSites++;
+					if (!this._debugP.disTwit) {
+						SiteScraper.collectedTwitSites.push(detectedSites[0]);
+						SiteScraper.atLeastOneValidURL.changeVal = true;
+						this._numVxTwitSites++;
+					}
 					break;
 				case SiteScraper.Websites.FixVX:
 					SiteScraper.collectedTwitSites.push(detectedSites[0]);
@@ -658,13 +664,11 @@ class Rook {
 	}
 
 	async messageCreateEvent(message) {
-		console.log(message);
-
 		if (message.author.bot)
 			return;
 
 		// Log the message to the console
-		//console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
+		console.log(message.createdAt.toDateString(), `${message.author.tag}:`, `"${message.content}"`);
 
 		var msgContent = message.content;
 		let regex;
@@ -822,8 +826,8 @@ class Rook {
 			}
 
 			// Loop through every single scraped URL and prepare a "To Post" cache for each website
-
-			console.log("scrapedURLs: " + scrapedURLs);
+			if (this._debugP.logScrapedURLs)
+				console.log("scrapedURLs: " + scrapedURLs);
 
 			const gatheredPostData = await this.parseAllSites(SiteScraper.sitesToParse, this._numTwitSites, this._numVxTwitSites, this._numFixVxTwitSites, this._numPixivSites, this._numPhixivSites);
 
